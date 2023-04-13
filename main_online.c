@@ -102,8 +102,7 @@ int stimulas_global_2;
 
 
 // Function for NAL_MTL_ GF - the infinitely often operator
-// GF_kj_array,//Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result)
-
+// GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result)
 //char GF_kj_array [FORMULA_COUNT][MAX_SEG][5]
 
 
