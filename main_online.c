@@ -189,7 +189,7 @@ int stimulas_global_2;
          if (FG_ji_array[form_count][seg_count][0] == timestamp) //start time
 
          {
-            FG_ji_array[form_count][seg_count][5] = p // when start time = end time
+            FG_ji_array[form_count][seg_count][5] = p; // when start time = end time
 
             if  ( (p && FG_ji_array[form_count][seg_count][3]) == 1  )
 
