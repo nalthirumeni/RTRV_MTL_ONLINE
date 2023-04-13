@@ -207,14 +207,15 @@ int stimulas_global_2;
          }
 
 
+        
          /*
 
-         p= current value of AP and i= previous value of AP taken from array
+         p= current value of AP and i= previous value of AP taken from array (stored earlier)
 
-         p=0,i=0 : make j = the end time
-         p=0,i=1 : make j = the end time
+         p=0,i=0 : make j = the end time stamp
+         p=0,i=1 : make j = the end time stamp 
          p=1,i=0 : make j = the current time stamp
-         p=1,i=1 : make j = don not change j let the lst j time stamp remain
+         p=1,i=1 : make j = don not change j let the previous  j time stamp remain
 
          P Thirumeni        12.4.23
 
