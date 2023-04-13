@@ -155,3 +155,121 @@ int stimulas_global_2;
 
 ////////////////////////////////////////
 
+
+
+///////////////////////////////////
+
+//FG
+
+// Function for NAL_MTL_FG - the eventually forever operator.
+
+//∃j (a ≤ j ≤ b) ∧ (∀i (a ≤ i < j) : (Ai ⊨ p ∨ Ai ⊭ p)  ∧  (∀i (j ≤ i ≤ b) : Ai ⊨ p)
+
+// FG_ji_array [FORMULA_COUNT][MAX_SEG][z=5]
+
+//z index detail: 0=start time, 1= end time, 2=j,3=i,4=FG_realise_percent,5=result of FG.
+
+
+
+
+   int NAL_MTL_FG(int p,int form_count,int seg_count,int ji_index,int FG_ji_array[form_count][seg_count][ji_index]) // formula id, segment_id, kji index, 3 d array
+
+
+        {
+
+
+      if (FG_ji_array[form_count][seg_count][0] == timestamp)
+          {
+           FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1]; // initialise j = end time
+           FG_ji_array[form_count][seg_count][3] =1; //// initialise i = 1
+          }
+
+//j is the point from which p becomes 1 forever
+
+         if (FG_ji_array[form_count][seg_count][0] == timestamp) //start time
+
+         {
+
+            if  ( (p && FG_ji_array[form_count][seg_count][3]) == 1  )
+
+            {
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                FG_ji_array[form_count][seg_count][2]=timestamp; //j
+            }
+
+             else if  ( (p && FG_ji_array[form_count][seg_count][3]) == 0  )
+
+            {
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time
+            }
+
+         }
+
+
+         /*
+
+         p= current value of AP and i= previous value of AP taken from array
+
+         p=0,i=0 : make j = the end time
+         p=0,i=1 : make j = the end time
+         p=1,i=0 : make j = the current time stamp
+         p=1,i=1 : make j = don not change j let the lst j time stamp remain
+
+         P Thirumeni        12.4.23
+
+         */
+
+            if ( (p == 1) && (FG_ji_array[form_count][seg_count][3] == 0) )
+
+                {
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                FG_ji_array[form_count][seg_count][2]= timestamp; // make j = timestamp hoping from this point all future p's will be 1.
+                FG_ji_array[form_count][seg_count][3] = 1; // update i =1
+                }
+
+            if ( (p == 1) && (FG_ji_array[form_count][seg_count][3] == 1) )
+
+                {
+
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                FG_ji_array[form_count][seg_count][3] = 1; // update i =1
+
+
+                }
+
+
+
+            else if (p == 0 )
+                {
+
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time
+                FG_ji_array[form_count][seg_count][3] = 0; // update i =0
+                }
+
+
+            if (FG_ji_array[form_count][seg_count][1] == timestamp) //end time reached
+
+             {
+               // GF_ji_array[form_count][seg_count][5] = GF_ji_array[form_count][seg_count][5]; //result of FG operation,result = last value of i
+                int FG_a =FG_ji_array[form_count][seg_count][0]; // start time
+                int FG_b =FG_ji_array[form_count][seg_count][1];  // end time
+                int FG_c =FG_b-FG_a; // total time duration for this property to evaluate.
+                FG_realise_percent =(((FG_b-FG_ji_array[form_count][seg_count][2]) /FG_c) * 100); // ((end time - j_time stamp  ) / (start time - end_time)) * 100 %
+                FG_ji_array[form_count][seg_count][4] == FG_realise_percent; // realise percentage of FG, this tells from start point how quickly eventually p became '1', higher the this percentage quicker the eventually forever condition reached.
+
+                printf("\n\n\n GF realise percentage %d \n",FG_realise_percent);
+                printf("\n\n\n GF realise result %d \n",FG_ji_array[form_count][seg_count][5]);
+                return FG_ji_array[form_count][seg_count][5];
+             }
+
+
+    return 0; // FG_ends
+}
+
+
+
+
+
+//////////////////////
