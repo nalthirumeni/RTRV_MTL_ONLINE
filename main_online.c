@@ -271,6 +271,114 @@ int stimulas_global_2;
 }
 
 
+//////////////////////
 
+//Until
+// NAL_MTL_Until  
+// format  p U[a,b] q
+
+//∃j (a ≤ j ≤ b) ∧ (∀i (a ≤ i < j) : (Ai ⊨ p ∨ Ai ⊭ p)  ∧  (∀i (j ≤ i ≤ b) : Ai ⊨ p)
+
+// U_array [FORMULA_COUNT][MAX_SEG][z=3]
+
+//z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result.
+
+
+
+   int NAL_MTL_U(int p,int q, int form_count,int seg_count,int u_index,int U_array[form_count][seg_count][u_index]) // formula id, segment_id, u_index, 3 d array
+
+        {
+
+        /*
+
+        // j is the time point at which q holds true.
+
+
+          p_now = 0,q_now=0 ; until failed.
+          p_now = 1,q_now=0 ; proceed to next iteration
+          p_now = 0,q_now=1 ; found j .
+          p_now = 1,q_now=1 ; found j .
+
+
+
+         P Thirumeni        12.4.23
+
+         */
+
+
+             if ( p==0 && q == 0) // p does not hold true till j
+
+             {
+                (U_array[form_count][seg_count][3] == 0); // result - until failed
+
+                int U_a =U_array[form_count][seg_count][0]; // start time
+                int U_b =U_array[form_count][seg_count][1];  // end time
+                int U_c =U_a-U_b; // total time duration for this property to evaluate.
+                U_realise_percent =(((timestamp-U_a) /U_c) * 100); // ((end time - j_time stamp  ) / (start time - end_time)) * 100 %
+                U_array[form_count][seg_count][2] == U_realise_percent; // realise percentage of U, % of at which p=0, that is until failed at this % of total time
+
+                printf("\n\n\n U realise percentage %d \n",U_array[form_count][seg_count][2]);
+
+                return (U_array[form_count][seg_count][3]); //return result failure
+             }
+
+//z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result.
+
+             if ( q == 1 )
+
+            {
+               // U_array[form_count][seg_count][4]=timestamp // j found at current time stamp, let us avoid this index to save memory
+               (U_array[form_count][seg_count][3] == q); // result
+
+                int U_a =U_array[form_count][seg_count][0]; // start time
+                int U_b =U_array[form_count][seg_count][1];  // end time
+                int U_c =U_a-U_b; // total time duration for this property to evaluate.
+                U_realise_percent =(((timestamp - U_a)  /U_c) * 100); // ((end time - j_time stamp  ) / (start time - end_time)) * 100 %
+                U_array[form_count][seg_count][2] == U_realise_percent; // realise percentage of U, % at which Until got satisfied
+
+                printf("\n\n\n U realise percentage %d \n",U_array[form_count][seg_count][2]);
+
+                return (U_array[form_count][seg_count][3]); //return result success
+
+
+             }
+
+              if ( (q==0) && (p == 1) )
+
+            {
+               U_array[form_count][seg_count][2]= U_array[form_count][seg_count][1]; // hoping U holds at end time, move to nest iteration.
+                                                                                     // nothing to do, move to next iteration
+
+             }
+
+               if ( (q==0) && (p == 1) && (U_array[form_count][seg_count][1] == timestamp) )
+
+                {
+                 (U_array[form_count][seg_count][3] == 0); // result - until failed
+
+                int U_a =U_array[form_count][seg_count][0]; // start time
+                int U_b =U_array[form_count][seg_count][1];  // end time
+                int U_c =U_a-U_b; // total time duration for this property to evaluate.
+                U_realise_percent =(((timestamp - U_a)  /U_c) * 100); // ((end time - j_time stamp  ) / (start time - end_time)) * 100 %
+                U_array[form_count][seg_count][2] == U_realise_percent; // realise percentage of U, % of at which p=0, that is until failed at this % of total time
+
+                printf("\n\n\n U realise percentage %d \n",U_array[form_count][seg_count][2]);
+
+
+                  return (U_array[form_count][seg_count][3]); //return result for failure
+                }
+
+
+
+
+            return 0; // next iteration
+
+    }  // until operator ends
+
+
+
+
+
+//////////////////////////////
 
 //////////////////////
