@@ -143,7 +143,7 @@ int stimulas_global_2;
                 GF_kj_array[form_count][seg_count][4] == GF_realise_percent; // realise percentage
 
                 printf("\n\n\n GF realise percentage %d \n",GF_realise_percent);
-                printf("\n\n\n GF realise percentage %d \n",GF_kj_array[form_count][seg_count][5]);
+                printf("\n\n\n GF result %d \n",GF_kj_array[form_count][seg_count][5]);
                 return GF_kj_array[form_count][seg_count][5];
              }
 
@@ -189,31 +189,31 @@ int stimulas_global_2;
          if (FG_ji_array[form_count][seg_count][0] == timestamp) //start time
 
          {
+            FG_ji_array[form_count][seg_count][5] = p // when start time = end time
 
             if  ( (p && FG_ji_array[form_count][seg_count][3]) == 1  )
 
             {
-                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+
                 FG_ji_array[form_count][seg_count][2]=timestamp; //j
             }
 
              else if  ( (p && FG_ji_array[form_count][seg_count][3]) == 0  )
 
             {
-                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+
                 FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time
             }
 
          }
 
 
-        
          /*
 
-         p= current value of AP and i= previous value of AP taken from array (stored earlier)
+         p= current value of AP and i= previous value of AP taken from array
 
          p=0,i=0 : make j = the end time stamp
-         p=0,i=1 : make j = the end time stamp 
+         p=0,i=1 : make j = the end time stamp
          p=1,i=0 : make j = the current time stamp
          p=1,i=1 : make j = don not change j let the previous  j time stamp remain
 
@@ -224,18 +224,18 @@ int stimulas_global_2;
             if ( (p == 1) && (FG_ji_array[form_count][seg_count][3] == 0) )
 
                 {
-                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+
                 FG_ji_array[form_count][seg_count][2]= timestamp; // make j = timestamp hoping from this point all future p's will be 1.
                 FG_ji_array[form_count][seg_count][3] = 1; // update i =1
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
                 }
 
             if ( (p == 1) && (FG_ji_array[form_count][seg_count][3] == 1) )
 
                 {
 
-                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
                 FG_ji_array[form_count][seg_count][3] = 1; // update i =1
-
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
 
                 }
 
@@ -244,9 +244,10 @@ int stimulas_global_2;
             else if (p == 0 )
                 {
 
-                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+
                 FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time
                 FG_ji_array[form_count][seg_count][3] = 0; // update i =0
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
                 }
 
 
@@ -268,7 +269,6 @@ int stimulas_global_2;
 
     return 0; // FG_ends
 }
-
 
 
 
