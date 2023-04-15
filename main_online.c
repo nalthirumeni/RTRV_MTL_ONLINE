@@ -120,7 +120,7 @@ int stimulas_global_2;
 
             if (p == 1 )
                 {
-                found_j = 1;
+                
                 GF_kj_array[form_count][seg_count][2]=timestamp;  // k = timestamp, till this time point GF holding true...
                 GF_kj_array[form_count][seg_count][3] = 1; // j =1
                 }
