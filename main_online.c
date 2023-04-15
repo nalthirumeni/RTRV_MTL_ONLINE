@@ -190,7 +190,7 @@ int stimulas_global_2;
          if (FG_ji_array[form_count][seg_count][0] == timestamp) //start time
 
          {
-            FG_ji_array[form_count][seg_count][5] = p; // when start time = end time
+            //FG_ji_array[form_count][seg_count][5] = p; // 
 
             if  ( (p && FG_ji_array[form_count][seg_count][3]) == 1  )
 
@@ -227,16 +227,16 @@ int stimulas_global_2;
                 {
 
                 FG_ji_array[form_count][seg_count][2]= timestamp; // make j = timestamp hoping from this point all future p's will be 1.
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result considering two values at end
                 FG_ji_array[form_count][seg_count][3] = 1; // update i =1
-                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
-                }
+                 }
 
             if ( (p == 1) && (FG_ji_array[form_count][seg_count][3] == 1) )
 
                 {
 
                 FG_ji_array[form_count][seg_count][3] = 1; // update i =1
-                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end values 1,1
 
                 }
 
@@ -247,8 +247,8 @@ int stimulas_global_2;
 
 
                 FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time
-                FG_ji_array[form_count][seg_count][3] = 0; // update i =0
                 FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                FG_ji_array[form_count][seg_count][3] = 0; // update i =0
                 }
 
 
