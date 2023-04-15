@@ -35,17 +35,21 @@
 
 
 //DATA STRUCTURES
-
 char AP_UPDATE [NUM_APS] = {1};                  // FOR EVERY TIME STAMP UPDATE
 char data[MAX_ROWS][NUM_COLS] = {{1}};           // FOR RETRIVING ANY TIMESTAMPED ROW DATA AND TO RETRIEVE ANY COLUM TIME STAMPED DATA(LOW AND HIGH TIME LIMITS)
 char data_1[ASR_MAX_ROWS][ASR_NUM_COLS] = {{1}}; // FOR MANUPULATING SEGMENTS RESULTS AND RETRIVING SEGMENT DATA PER FORMULA BASED ON FORMULA INDEX (ID)
-char GF_kj_array [FORMULA_COUNT][MAX_SEG][5] = {{{0}}};  // three dimensional array for handling k and j values during GF operations,x= formula count.y=max. segment count found in any one of the formula.Z=5 (S_TS, E_TS, k, j, GF_result)
-
+char GF_kj_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional array for handling k and j values during GF operations,x= formula count.y=max. segment count found in any one of the formula.Z=5 (S_TS, E_TS, k, j, GF_result)
 // GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result); S_TS = starting time stamp,E_TS= ending time stamp
 
+char FG_ji_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional array for handling k and j  and i etc., values during FG operations,x= formula count.y=max. segment count found in any one of the formula.Z=5 (S_TS, E_TS, k, j, GF_result)
+ //FG_kj_array[FORMULA_COUNT][MAX_SEG][5] = {{{}}}; // [for index] [seg index] [z],Z=6 (S_TS, E_TS,j, i,GF_percent,GF_result); S_TS = starting time stamp,E_TS= ending time stamp
 
 //char ASR [FORMULA_COUNT] [MAX_SEG] ={{0}};
+//char FG_ji_array [10][10][10]={{{}}};
 
+
+char U_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=3 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
+char S_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=3 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
 
 char headers[NUM_COLS][500];
 
