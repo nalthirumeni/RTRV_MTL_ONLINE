@@ -112,16 +112,16 @@ int stimulas_global_2;
 
         {
 
-          if (GF_kj_array[seg_count][seg_count][0] == timestamp)
+          if (GF_kj_array[seg_count][seg_count][0] == timestamp) //checking current time equals to the start time of the segment
           {
-           GF_kj_array[form_count][seg_count][2]=GF_kj_array[form_count][seg_count][0]; // initialise k = strat time
+           GF_kj_array[form_count][seg_count][2]=GF_kj_array[form_count][seg_count][0]; // initialise k = start time
           }
 
 
             if (p == 1 )
                 {
                 found_j = 1;
-                GF_kj_array[form_count][seg_count][2]=time stamp;  // k = timestamp, till this time point GF holding true...
+                GF_kj_array[form_count][seg_count][2]=timestamp;  // k = timestamp, till this time point GF holding true...
                 GF_kj_array[form_count][seg_count][3] = 1; // j =1
                 }
 
@@ -131,15 +131,16 @@ int stimulas_global_2;
 
                 }
 
+// GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result)
 
-            if (GF_kj_array[form_count][seg_count][1] == timestamp; )
+            if (GF_kj_array[form_count][seg_count][1] == timestamp; ) //checking current time equals to the end time of the segment
 
              {
                 GF_kj_array[form_count][seg_count][5] = GF_kj_array[form_count][seg_count][3]; //result of GF operation,result = last value of j
                 int GF_a =GF_kj_array[form_count][seg_count][0]; // start time
                 int GF_b =GF_kj_array[form_count][seg_count][1];  // end time
                 int GF_c=b-a; // total time duration for this property to evaluate.
-                GF_realise_percent =((GF_kj_array[form_count][seg_count][2] - a) /c) * 100); // k-time stamp - start time / time duration * 100 %
+                GF_realise_percent =((GF_kj_array[form_count][seg_count][2] - a) /c) * 100); // (k-time stamp - start time / time duration * 100 %)
                 GF_kj_array[form_count][seg_count][4] == GF_realise_percent; // realise percentage
 
                 printf("\n\n\n GF realise percentage %d \n",GF_realise_percent);
