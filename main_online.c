@@ -36,7 +36,6 @@
 
 //DATA STRUCTURES
 //DATA STRUCTURES
-
 char AP_UPDATE [NUM_APS] = {1};                  // FOR EVERY TIME STAMP UPDATE
 char data[MAX_ROWS][NUM_COLS] = {{1}};           // FOR RETRIVING ANY TIMESTAMPED ROW DATA AND TO RETRIEVE ANY COLUM TIME STAMPED DATA(LOW AND HIGH TIME LIMITS)
 char data_1[ASR_MAX_ROWS][ASR_NUM_COLS] = {{1}}; // FOR MANUPULATING SEGMENTS RESULTS AND RETRIVING SEGMENT DATA PER FORMULA BASED ON FORMULA INDEX (ID)
@@ -50,9 +49,8 @@ char FG_ji_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional ar
 //char FG_ji_array [10][10][10]={{{}}};
 
 
-char U_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=3 (0=S_TS, 1=E_TS,2=U_percent,3=result)
-char S_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=3 (0=S_TS, 1=E_TS,2=U_percent,3=result)
-
+char U_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=3 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
+char S_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=3 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
 
 
 
