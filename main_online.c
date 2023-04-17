@@ -52,7 +52,7 @@ int FG_ji_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional arr
 
 int U_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=4 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
 int S_array[FORMULA_COUNT][MAX_SEG][9] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=prev_q holder,6=k_p,7=m_q,8=n_q
-int W_array[FORMULA_COUNT][MAX_SEG][5] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=all_p
+int W_array[FORMULA_COUNT][MAX_SEG][5] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= all_p
 
 
 char headers[NUM_COLS][500];
