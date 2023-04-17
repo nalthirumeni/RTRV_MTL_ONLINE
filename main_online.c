@@ -51,7 +51,7 @@ int FG_ji_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional arr
 
 
 int U_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=4 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
-int S_array[FORMULA_COUNT][MAX_SEG][8] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=prev_q holder,6=k_p,7=m_q,8=n_q
+int S_array[FORMULA_COUNT][MAX_SEG][9] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=prev_q holder,6=k_p,7=m_q,8=n_q
 int W_array[FORMULA_COUNT][MAX_SEG][5] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=all_p
 
 
@@ -521,5 +521,113 @@ int stimulas_global_2;
 //////////////////////
 
 
+// weak until
+
+// Function for NAL_MTL_Weak_Until - the weak until operator.
+
+//z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= all_p
+
+       // format  p W[a,b] q
+
+   int NAL_MTL_W(int p,int q, int form_count,int seg_count,int w_index,int U_array[form_count][seg_count][w_index]) // formula id, segment_id, kji index, 3 d array
+
+
+        {
+
+        // weak until,  j is the time point at which q holds true.
+
+        /*
+          p_now = 0,q_now=0 ; until failed.
+          p_now = 1,q_now=0 ; proceed to next iteration
+          p_now = 0,q_now=1 ; found j .exit
+          p_now = 1,q_now=1 ; found j .exit
+          from start to end p_now all true ; property true.
+
+
+
+         P Thirumeni        12.4.23
+
+         */
+             if ( (U_array[form_count][seg_count][0]) == timestamp)  // at start initialise..
+
+                 {
+                     (U_array[form_count][seg_count][4])=1; //all_p init to 1 if p become 0 at some stage this will become 0
+                 }
+
+
+             if ( p==0 && q == 0) // p does not hold property fails
+             {
+                (U_array[form_count][seg_count][3] == 0); // result - until failed
+
+                int U_a =U_array[form_count][seg_count][0]; // start time
+                int U_b =U_array[form_count][seg_count][1];  // end time
+                int U_c =U_a-U_b; // total time duration for this property to evaluate.
+                U_realise_percent =(((timestamp-U_a) /U_c) * 100); //
+                U_array[form_count][seg_count][2] == U_realise_percent; // realise percentage of U, % of at which p=0, that is until failed at this % of total time
+
+                printf("\n\n\n U realise percentage %d \n",U_array[form_count][seg_count][2]);
+
+                return (U_array[form_count][seg_count][3]); //return result failure
+             }
+
+//z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result.
+
+             if ( q == 1 )
+
+            {
+               // U_array[form_count][seg_count][4]=timestamp // j found at current time stamp, let us avoid this index to save memory
+               (U_array[form_count][seg_count][3] == q); // result
+
+                int U_a =U_array[form_count][seg_count][0]; // start time
+                int U_b =U_array[form_count][seg_count][1];  // end time
+                int U_c =U_a-U_b; // total time duration for this property to evaluate.
+                U_realise_percent =(((timestamp - U_a)  /U_c) * 100); // ((end time - j_time stamp  ) / (start time - end_time)) * 100 %
+                U_array[form_count][seg_count][2] == U_realise_percent; // realise percentage of U, % at which Until got satisfied
+
+                printf("\n\n\n U realise percentage %d \n",U_array[form_count][seg_count][2]);
+
+                return (U_array[form_count][seg_count][3]); //return result success
+
+
+             }
+
+              if ( (p==1) && (q == 0) )
+
+            {
+               U_array[form_count][seg_count][2]= U_array[form_count][seg_count][1]; // hoping U holds at end time, move to nest iteration.
+                                                                                     // nothing to do, move to next iteration
+
+             }
+
+
+//z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= all_p
+
+
+        if ( timestamp) // at every time stamp p && prev_p
+
+            {
+                (U_array[form_count][seg_count][4])= (p && (U_array[form_count][seg_count][4]));
+            }
+
+              if ( (U_array[form_count][seg_count][1] == timestamp) && (U_array[form_count][seg_count][4]) == 1 )
+
+              {
+
+                int U_a =U_array[form_count][seg_count][0]; // start time
+                int U_b =U_array[form_count][seg_count][1];  // end time
+                int U_c =U_a-U_b; // total time duration for this property to evaluate.
+                U_realise_percent =(((timestamp - U_a)  /U_c) * 100); // ((end time - j_time stamp  ) / (start time - end_time)) * 100 %
+                U_array[form_count][seg_count][2] == U_realise_percent; // realise percentage of U, % at which Until got satisfied
+
+                printf("\n\n\n U realise percentage %d \n",U_array[form_count][seg_count][2]);
+
+                return (U_array[form_count][seg_count][4]); //return result success
+              }
+
+            return 2;
+
+    }  // weak until operator ends
+
+/////////////////////////////////
 
 //////////////////////////////////
