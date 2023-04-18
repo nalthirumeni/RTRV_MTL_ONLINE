@@ -636,7 +636,7 @@ int stimulas_global_2;
 
 // for single input arguments like not of p or finf p == 1 etc., send q argument as 0 or 1 arbitrary. 
 
-int NAL_MTL_Verdict_2(int logic_operator, unsigned int AP_UPDATE [p]  ,unsigned int AP_UPDATE [q])
+int NAL_MTL_Verdict_2 (int logic_operator, unsigned int p, int q)
 
         {
 
