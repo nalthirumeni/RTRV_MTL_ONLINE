@@ -631,6 +631,98 @@ int stimulas_global_2;
 
     }  // weak until operator ends
 
-/////////////////////////////////
 
-//////////////////////////////////
+////////////////////////////////////////////////////
+
+// for single input arguments like not of p or finf p == 1 etc., send q argument as 0 or 1 arbitrary. 
+
+int NAL_MTL_Verdict_2(int logic_operator, unsigned int AP_UPDATE [p]  ,unsigned int AP_UPDATE [q])
+
+        {
+
+        int v;
+          switch (logic_operator)
+
+          {
+        case 1:     // If input is 1, check if p is equal to 1 ; also used to read the atomic proposition as a 'bit' from the array, here q is irrelevant
+
+            if (p == 1)
+            {
+
+
+                printf("p == 1\n");
+                v=1;
+            }
+
+            else if (p == 0)
+            {
+
+             printf("p != 1\n");
+                v=0;
+            }
+            break;
+        case 0:
+            // If input is 0, check if p is equal to 0
+            if (p == 0)
+                {
+                printf("p == 0\n");
+                v=1;
+                }
+            else if (p == 1)
+                {
+                printf("p != 0\n");
+                v=0;
+                }
+
+            break;
+        case 3:
+            // If input is 3, perform logical AND operation on p and q
+            v = p && q;
+            printf("p && q = %d\n", v);
+            break;
+        case 4:
+            // If input is 4, perform logical OR operation on p and q
+            v = p || q;
+            printf("p || q = %d\n", v);
+            break;
+        case 5:
+            // If input is 5, perform logical NOT operation on p
+            v = !p;
+            printf("!p = %d\n", v);
+            break;
+        case 6:
+            // If input is 6, perform logical implication operation on p and q
+            v = (!p) || q;
+            printf("(!p) || q = %d\n", v);
+            break;
+        case 7:
+            // If input is 7, perform logical equivalence operation on p and q
+           if (p != q)
+            {
+                v = 0;
+            }
+           else if (p == q)
+            {
+              v = 1;
+             }
+
+            printf("(p iff q) = %d\n", v);
+            break;
+        case 9:
+            // If input is 9, perform logical XOR operation on p and q
+            v = p ^ q;
+            printf("p ^ q = %d\n", v);
+            break;
+        default:
+            // If input is not valid, print error message
+            v=3;
+            printf("Invalid logic request input!\n");
+
+            return v;
+    }
+
+
+
+    }  // Verdict operator_2 ends
+
+/////////////////////////////////////////////////
