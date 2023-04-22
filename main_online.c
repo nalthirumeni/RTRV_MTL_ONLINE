@@ -753,3 +753,108 @@ int Write_ASC(int asc_index, int asc_value)
 
 
 /////////////////////////////////
+
+
+//////////////////////////////////////
+
+//  G operator.
+
+//unsigned int G_array [FORMULA_COUNT][MAX_SEG][5] = {{{1}}};  // three dimensional array for Gloablly operator related values
+
+  // 0=S_TS, 1=E_TS, 2=prev_g , 3=G_percent,4=G_result);
+
+
+        int NAL_MTL_G(int p,int form_count,int seg_count,int G_index,int G_array[form_count][seg_count][G_index])  //
+
+        {
+
+          if (G_array[form_count][seg_count][0] == timestamp) // checking start time
+          {
+           G_array[form_count][seg_count][2]=1; // initialise prev_g =1
+          }
+
+           G_array[form_count][seg_count][4]=G_array[form_count][seg_count][2] && p ; // prev_g && current g
+
+            if (G_array[form_count][seg_count][4] == 0)
+
+            {
+                int a = G_array[form_count][seg_count][0];
+                int b = G_array[form_count][seg_count][1];
+                int c = b-c;
+                G_array[form_count][seg_count][3] = (( timestamp - a) /c) *100 ; // failure case % at which the G operation failed
+                printf("\n\n\n G realise percentage %d \n",G_array[form_count][seg_count][3]);
+                printf("\n\n\n G result %d \n",G_array[form_count][seg_count][4]);
+                return (G_array[form_count][seg_count][4]); // failure case result at any point in time
+            }
+
+
+          if (G_array[form_count][seg_count][1] == timestamp) // checking end time
+            {
+                int a = G_array[form_count][seg_count][0];
+                int b = G_array[form_count][seg_count][1];
+                int c = b-c;
+                G_array[form_count][seg_count][3] = (( timestamp - a) /c) *100 ; // G success 100% at the end
+                printf("\n\n\n G realise percentage %d \n",G_array[form_count][seg_count][3]);
+                printf("\n\n\n G result %d \n",G_array[form_count][seg_count][4]);
+                return (G_array[form_count][seg_count][4]); // success G - at the end of time window
+            }
+
+         }
+
+         // G operator ends.
+
+
+
+////////////////////////
+
+//////////////////////////////////////
+
+//  F operator.
+//unsigned int F_array [FORMULA_COUNT][MAX_SEG][5] = {{{1}}};  // three dimensional array for Finally operator related values
+// F_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, prev_f , F_percent,F_result); S_TS = starting time stamp,E_TS= ending time stamp
+
+
+
+        int NAL_MTL_F(int p,int form_count,int seg_count,int F_index,int F_array[form_count][seg_count][F_index])  //
+
+        {
+
+          if (F_array[form_count][seg_count][0] == timestamp) // checking start time
+          {
+           F_array[form_count][seg_count][2]=0; // initialise prev_f =1
+          }
+
+           F_array[form_count][seg_count][4]=F_array[form_count][seg_count][2] || p ; // prev_p && current p for f
+
+            if (F_array[form_count][seg_count][4] == 1) // success case
+
+            {
+                int a = F_array[form_count][seg_count][0];
+                int b = F_array[form_count][seg_count][1];
+                int c = b-c;
+                F_array[form_count][seg_count][3] = (( timestamp - a) /c) *100 ; // success case % at which the p becomes 1
+                printf("\n\n\n F realise percentage %d \n",F_array[form_count][seg_count][3]);
+                printf("\n\n\n F result %d \n",F_array[form_count][seg_count][4]);
+                return (F_array[form_count][seg_count][4]); // sucess case result at any point in time
+            }
+
+
+          if (F_array[form_count][seg_count][1] == timestamp) // checking end time
+            {
+                int a = F_array[form_count][seg_count][0];
+                int b = F_array[form_count][seg_count][1];
+                int c = b-c;
+                F_array[form_count][seg_count][3] = (( timestamp - a) /c) *100 ; // failure case all p are 0
+                printf("\n\n\n F realise percentage %d \n",F_array[form_count][seg_count][3]);
+                printf("\n\n\n F result %d \n",F_array[form_count][seg_count][4]);
+                return (F_array[form_count][seg_count][4]); // failure case result at end time
+            }
+
+         }
+
+
+
+
+////////////////////////
+
+
