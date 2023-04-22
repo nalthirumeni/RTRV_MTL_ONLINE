@@ -744,3 +744,12 @@ int Get_ASC(int asc_index)
 
 ///////////////////////////////////////////////////////
 
+
+int Write_ASC(int asc_index, int asc_value)
+
+        {
+          return ASC_UPDATE [asc_index]=asc_value;
+        }
+
+
+/////////////////////////////////
