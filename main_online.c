@@ -42,8 +42,7 @@ unsigned int AP_UPDATE [NUM_APS+1] = {1};                  // FOR EVERY TIME STA
 char data[MAX_ROWS][NUM_COLS] = {{1}};           // FOR RETRIVING ANY TIMESTAMPED ROW DATA AND TO RETRIEVE ANY COLUM TIME STAMPED DATA(LOW AND HIGH TIME LIMITS)
 char data_1[ASR_MAX_ROWS][ASR_NUM_COLS] = {{1}}; // FOR MANUPULATING SEGMENTS RESULTS AND RETRIVING SEGMENT DATA PER FORMULA BASED ON FORMULA INDEX (ID)
 
-
-
+unsigned int ASC_UPDATE [ASC_COUNT] = {1};                  // general asserts list, for manupulation suing verdict operator
 
 unsigned int GF_kj_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional array for handling k and j values during GF operations,x= formula count.y=max. segment count found in any one of the formula.Z=5 (S_TS, E_TS, k, j, GF_result)
 // GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result); S_TS = starting time stamp,E_TS= ending time stamp
@@ -726,3 +725,22 @@ int NAL_MTL_Verdict (int logic_operator, unsigned int p, int q)
     }  // Verdict operator_2 ends
 
 /////////////////////////////////////////////////
+
+
+/////////////////////////
+
+int Get_AP(int ap_index) // caution  - this function to be used, only when the row data is read and available for this function.
+
+        {
+          timestamp = AP_UPDATE[0]; // TO ENSURE TIMESTAMP AND AP MATCHES...DOUBLE CHECK
+          return AP_UPDATE[ap_index];
+        }
+
+int Get_ASC(int asc_index)  
+
+        {
+          return ASC_Array[asc_index];
+         }
+
+///////////////////////////////////////////////////////
+
