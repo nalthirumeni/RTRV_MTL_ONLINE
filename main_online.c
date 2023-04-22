@@ -30,7 +30,7 @@
 
 #define FORMULA_COUNT 128 // number of RVRT_MTL formulas.
 #define MAX_SEG 64      // number segment max. variables in longest RVRT_MTL formulas (S1,S2..)
-
+#define ASC_COUNT 256 // general purpose asserts
 
 
 
