@@ -1,18 +1,21 @@
+
                             /*       NAL_RV       */
 
-                            // P26 FOR ONLINE MONITORING
+                            // P27 FOR ONLINE MONITORING
 
 
 // This is Run Time monitoring software tool, for monitoring RT systems to be used along with NAL_MTL specifications.
 
 // Developed by P Thirumeni -203085002, PhD, student IIT Dharwad India.
 // Under the guidance of PhD. Supervisors, Dr.Rajshekar.K (IIT-Dh), Dr.C.M.Ananda (CSIR-NAL)
- 
-// working P26 P THIRUMENI  date :18.04.23
+
+//   P THIRUMENI  date :24.04.23
 
 // implementation under progress for  Online mode of operation//
 
-// P26 FOR ONLINE MONITORING
+// P27 FOR ONLINE MONITORING
+
+// Functions : G,F,U,S,W,GF,FG,V,AP_update,Write_ASC,Get_ASC
 
 
 /**********************************************************************************************/
@@ -105,7 +108,7 @@ int ON_after_delay_global_2=0;
 int stimulas_global_2;
 
 // Functions
- 
+
 /////////////////////////////////////////////////
 
 // GF_operator - Infinitely Often
@@ -130,7 +133,7 @@ int stimulas_global_2;
 
             if (p == 1 )
                 {
-                
+
                 GF_kj_array[form_count][seg_count][2]=timestamp;  // k = timestamp, till this time point GF holding true...
                 GF_kj_array[form_count][seg_count][3] = 1; // j =1
                 }
@@ -143,14 +146,14 @@ int stimulas_global_2;
 
 // GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result)
 
-            if (GF_kj_array[form_count][seg_count][1] == timestamp; ) //checking current time equals to the end time of the segment
+            if (GF_kj_array[form_count][seg_count][1] == timestamp ) //checking current time equals to the end time of the segment
 
              {
                 GF_kj_array[form_count][seg_count][5] = GF_kj_array[form_count][seg_count][3]; //result of GF operation,result = last value of j
                 int GF_a =GF_kj_array[form_count][seg_count][0]; // start time
                 int GF_b =GF_kj_array[form_count][seg_count][1];  // end time
-                int GF_c=b-a; // total time duration for this property to evaluate.
-                GF_realise_percent =((GF_kj_array[form_count][seg_count][2] - a) /c) * 100); // (k-time stamp - start time / time duration * 100 %)
+                int GF_c=GF_b-GF_a; // total time duration for this property to evaluate.
+                GF_realise_percent =(((GF_kj_array[form_count][seg_count][2] - GF_a) /GF_c) * 100); // (k-time stamp - start time / time duration * 100 %)
                 GF_kj_array[form_count][seg_count][4] == GF_realise_percent; // realise percentage
 
                 printf("\n\n\n GF realise percentage %d \n",GF_realise_percent);
@@ -200,7 +203,7 @@ int stimulas_global_2;
          if (FG_ji_array[form_count][seg_count][0] == timestamp) //start time
 
          {
-            //FG_ji_array[form_count][seg_count][5] = p; // 
+            //FG_ji_array[form_count][seg_count][5] = p; //
 
             if  ( (p && FG_ji_array[form_count][seg_count][3]) == 1  )
 
@@ -285,7 +288,7 @@ int stimulas_global_2;
 //////////////////////
 
 //Until
-// NAL_MTL_Until  
+// NAL_MTL_Until
 // format  p U[a,b] q
 
 //∃j (a ≤ j ≤ b) ∧ (∀i (a ≤ i < j) : (Ai ⊨ p ∨ Ai ⊭ p)  ∧  (∀i (j ≤ i ≤ b) : Ai ⊨ p)
@@ -736,10 +739,10 @@ int Get_AP(int ap_index) // caution  - this function to be used, only when the r
           return AP_UPDATE[ap_index];
         }
 
-int Get_ASC(int asc_index)  
+int Get_ASC(int asc_index)
 
         {
-          return ASC_Array[asc_index];
+          return ASC_UPDATE[asc_index];
          }
 
 ///////////////////////////////////////////////////////
@@ -858,3 +861,12 @@ int Write_ASC(int asc_index, int asc_value)
 ////////////////////////
 
 
+int main()
+{
+    printf("\n\n\n");
+    printf("            ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    printf("                                  NAL_RTRV MONITOR\n");
+    printf("            ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    printf("\n\n\n");
+    return 0;
+}
