@@ -1,8 +1,8 @@
-                                  
-/*
-			+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
 
-							      NAL_RV       
+/*
+			+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+							      NAL_RV
 
 			+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -22,7 +22,6 @@
 
 /**************************************************************************************************************************************************************/
 
-*/
 
 
 
@@ -84,8 +83,6 @@ int row_index;
 char line[200];
 char headers[NUM_COLS][500];
 
-
-
 float G_realise_percent;
 float F_realise_percent;
 float GF_realise_percent;
@@ -93,7 +90,6 @@ float FG_realise_percent;
 float U_realise_percent;
 float S_realise_percent;
 float W_realise_percent;
-
 
 
 // Function prototypes.
@@ -126,18 +122,18 @@ int main()
     printf("\n                              +++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     printf("\n\n");
 
-    timestamp=3;// initial timestamp.
+
 
     //array dimention 3 index detail -  0=S_TS, 1=E_TS, 2=prev_g , 3=G_percent,4=G_result);
     // fill start and end time and call G_func.
 
     G_array[5][10][0] =3; // start timestamp
     G_array[5][10][1] =18; // end timestamp
-
-
+    int p;
+ // timestamp=3;// initial timestamp.
     F_array[5][10][0] =3; // start timestamp
     F_array[5][10][1] =18; // end timestamp
-
+/*
     int p =0; // to be tested
     int start_time = 3;
     int end_time = 18;
@@ -146,33 +142,167 @@ int main()
     {
     sleep(1);
     timestamp =i;
+
     if (i == 17)
     {
-        p=1;
+       // p=1;
     }
-    printf("\nsending p = %d, at timestamp %d \n ", p,timestamp);
+
     // Testing G operator.
-  //  int ss = NAL_MTL_G(p,5,10);
-     // Testing F operator
-
-    int ss = NAL_MTL_F(p,5,10); // formula 5 and segment 10
-
-
-    //if (ss == 0)
-    if (ss == 1)
-    {
-        break;
+    //  int ss = NAL_MTL_G(p,5,10);
+    // Testing F operator
+    //int ss = NAL_MTL_F(p,5,10); // formula 5 and segment 10
+     printf("\nsending p = %d, at timestamp %d \n ", p,timestamp);
     }
 
+
+    */
+
+    // Testing GF operator
+    ///////////////
+    //read data from csv file
+
+    // Function to get the data row corresponding for a given timestamp
+
+ char filename[] = "testcsv.txt";
+    FILE *fp;
+
+    int row = 0, col = 0, i, j;
+
+    fp = fopen(filename, "r");
+    if (fp == NULL)
+        {
+        printf("Could not open csv file %s", filename);
+        return 1;
     }
+
+    // Read header row
+    if (fgets(line, sizeof(line), fp) != NULL)
+        {
+        char *token = strtok(line, ",");
+        while (token != NULL) {
+            strcpy(headers[col], token);
+            token = strtok(NULL, ",");
+            col++;
+        }
+    }
+
+    // Read data from file
+    row = 0;
+    col = 0;
+    while (fgets(line, sizeof(line), fp) != NULL)
+        {
+        char *token = strtok(line, ",");
+        while (token != NULL) {
+            data[row][col++] = atoi(token);
+            token = strtok(NULL, ",");
+        }
+        row++;
+        col = 0;
+    }
+
+    fclose(fp);
+//////////////////////////////////
+
+    ///////////////
+    // format int* col_data = get_data_by_AP(col_index, start_row, end_row);
+
+    // input for GF here...
+
+        int start_TS=3;
+        int end_TS=19;
+        int col_index =5;//ap index
+
+        int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
+        int end_in_array = end_TS -1;
+
+        int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
+
+        GF_kj_array[5][10][0] =start_TS; // start timestamp
+        GF_kj_array[5][10][1] =end_TS; // end timestamp
+
+
+         printf("\n\n\n GF function - Sending the values of P per every 1 sec now....\n");
+
+         printf("\n start time - GF_kj_array[5][10][0] = %d, end time - GF_kj_array[5][10][1] = %d\n",GF_kj_array[5][10][0],GF_kj_array[5][10][1]);
+
+        for (int i = start_in_array; i <= end_in_array; i++)
+        {
+        sleep(1);
+        timestamp =i+1;
+        p= data[i][col_index]; // -1 considering that arrays stats with 0 index.
+        //printf("AP id/index = %d, time stamp= %d: AP value p = %d\n", col_index,i, col_data_1[i - start_TS]);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+         printf("Sending - AP id/index = %d, time stamp= %d: AP value p = %d\n", col_index,timestamp, p);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+
+        // test GF here...
+        //int NAL_MTL_GF(int p,unsigned int form_count,unsigned int seg_count)
+
+        int ss = NAL_MTL_GF(p,5,10);
+
+
+
+        }
 
     return 0;
     }
 
 
+///////////////// main ends here.
+
+//////////////////////////////////
 
 
+int* get_data_by_timestamp(int timestamp)
 
+    {
+    static int row_data[NUM_COLS];
+    int i;
+    row_index = -1;
+    for (i = 0; i < MAX_ROWS; i++) {
+        if (data[i][0] == timestamp) // search for the time stamp from the first column
+            {
+            row_index = i;
+            break;
+        }
+    }
+    if (row_index == -1) {
+        printf("No data row found with timestamp %d\n", timestamp);
+        return NULL;
+    }
+    for (int u = 0; u < NUM_COLS; u++) {
+        row_data[u] = data[row_index][u];
+    }
+    return row_data;
+}
+
+/////////////////
+
+
+///////////////////////////////////
+
+int* get_data_by_AP(int col_index, int start_TS, int end_TS) //get columnwise data for the given time range
+
+{
+
+   // printf("Inside column scan func.\n");
+    printf(" \n");
+    int* col_data_1 = (int*)malloc((end_TS - start_TS + 1) * sizeof(int)); // allocate memory for column data,  size based on input range
+    if (col_data_1 == NULL) {
+        printf("Memory allocation failed for column data.\n");
+        return NULL;
+    }
+    printf(" \n");
+
+    for (int i = start_TS; i <= end_TS; i++) {
+        col_data_1[i - start_TS] = data[i][col_index];
+      //  printf("AP id/index = %d, time stamp= %d: AP value = %d\n", col_index,i, col_data_1[i - start_TS]);
+    }
+
+    return col_data_1;
+}
+
+
+//////////////////////////////////
 
 
 // Fucntion Definitions from here.....
@@ -354,4 +484,3 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
             }  // GF function ends
 
 ////////////////////////////////////////
-
