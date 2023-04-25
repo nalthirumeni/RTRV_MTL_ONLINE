@@ -127,7 +127,7 @@ int stimulas_global_2;
 
         {
 
-          if (GF_kj_array[seg_count][seg_count][0] == timestamp) //checking current time equals to the start time of the segment
+          if (GF_kj_array[form_count][seg_count][0] == timestamp) //checking current time equals to the start time of the segment
           {
            GF_kj_array[form_count][seg_count][2]=GF_kj_array[form_count][seg_count][0]; // initialise k = start time
           }
