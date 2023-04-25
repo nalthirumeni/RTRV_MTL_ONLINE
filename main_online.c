@@ -113,54 +113,69 @@ int stimulas_global_2;
 
 /////////////////////////////////////////////////
 
+///////////////////////////////////
 // GF_operator - Infinitely Often
 
-//     ∀k ≥ a ∧ k ≤ b . ∃j ≥ k ∧ j ≤ b : (Aj ⊨ p)  where a,b are low and up time limit and 'p' is the Atomic proposition(AP) of a RTRV_MTL subformula to be evaluated.
+//     ∀k ≥ a ∧ k ≤ b . ∃j ≥ k ∧ j ≤ b : (Aj ⊨ p)  where a,b are low and up time limit and 'p' is the Atomic proposition(AP) of a RTRV_MTL subformula to be evaluated.
 
 
 // Function for NAL_MTL_ GF - the infinitely often operator
-// GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result)
-//char GF_kj_array [FORMULA_COUNT][MAX_SEG][5]
 
+//unsigned int GF_kj_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional array for handling k and j values during GF operations,x= formula count.y=max. segment count found in any one of the formula.Z=5 (S_TS, E_TS, k, j, GF_result)
+//Z=6 (0=S_TS, 1=E_TS, 2=k , 3=j, 4=GF_percent,5=GF_result); S_TS = starting time stamp,E_TS= ending time stamp
 
-   int NAL_MTL_GF(int p,int form_count,int seg_count,int kj_index,int GF_kj_array[form_count][seg_count][kj_index]) // formula id, segment_id, kj index, 3 d array
+  int NAL_MTL_GF(int p,unsigned int form_count,unsigned int seg_count)
 
         {
 
+           printf("\n Receiving inside GF_function  p=%d and time stamp = %d,start time=%d\n", p,timestamp,GF_kj_array[form_count][seg_count][0]);
+          // printf("\n GF_kj_array[5][10][0] = %d, GF_kj_array[5][10][1] = %d\n",GF_kj_array[5][10][0],GF_kj_array[5][10][1]);
           if (GF_kj_array[form_count][seg_count][0] == timestamp) //checking current time equals to the start time of the segment
           {
+           printf("\n Inside GF before init k as start time =%d \n", GF_kj_array[form_count][seg_count][2]);
            GF_kj_array[form_count][seg_count][2]=GF_kj_array[form_count][seg_count][0]; // initialise k = start time
+           printf("\n After init. in GF - k as start time =%d \n", GF_kj_array[form_count][seg_count][2]);
           }
 
 
             if (p == 1 )
                 {
 
+
                 GF_kj_array[form_count][seg_count][2]=timestamp;  // k = timestamp, till this time point GF holding true...
                 GF_kj_array[form_count][seg_count][3] = 1; // j =1
+                printf("\n while p =1,found j =1, and  updated k to current timestamp k =%d\n",GF_kj_array[form_count][seg_count][2]);
                 }
 
             else if (p == 0 )
                 {
                 GF_kj_array[form_count][seg_count][3] = 0; // j =0
+                printf("\n while p =0,found j=0, and   k - timestamp (last time j=0), k =%d\n\n",GF_kj_array[form_count][seg_count][2]);
 
                 }
 
-// GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result)
+// GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=6 (S_TS, E_TS, k , j, GF_percent,GF_result)
 
             if (GF_kj_array[form_count][seg_count][1] == timestamp ) //checking current time equals to the end time of the segment
 
              {
+               printf("\n at the end time - GF_kj_array[5][10][0] = %d, GF_kj_array[5][10][1] = %d\n",GF_kj_array[5][10][0],GF_kj_array[5][10][1]);
                 GF_kj_array[form_count][seg_count][5] = GF_kj_array[form_count][seg_count][3]; //result of GF operation,result = last value of j
+                //even only the last value of p =1 then GF is success
                 int GF_a =GF_kj_array[form_count][seg_count][0]; // start time
                 int GF_b =GF_kj_array[form_count][seg_count][1];  // end time
                 int GF_c=GF_b-GF_a; // total time duration for this property to evaluate.
-                GF_realise_percent =(((GF_kj_array[form_count][seg_count][2] - GF_a) /GF_c) * 100); // (k-time stamp - start time / time duration * 100 %)
-                GF_kj_array[form_count][seg_count][4] == GF_realise_percent; // realise percentage
-
-                printf("\n\n\n GF realise percentage %d \n",GF_realise_percent);
+                int d = GF_kj_array[form_count][seg_count][2];
+                float e=(((float)(d-GF_a))/((float) (GF_c))) *100;
+               // printf("a=%d,b=%d,c=%d,d=%d,e=%f\n",GF_a,GF_b,GF_c,d,e);
+                GF_kj_array[form_count][seg_count][4] = ((int)e); // realise percentage
+                printf("GF_kj_array[form_count][seg_count][4]\n",GF_kj_array[form_count][seg_count][4]);
+                printf("\n reached end of the GF time window.\n ");
+                printf("\nLast time j=1 at time stamp = %d\n",GF_kj_array[form_count][seg_count][2]);//k value
+                printf("\n Current timestamp=%d,start time of GF = %d ,End time of GF = %d, Total Duration = %d,",timestamp,GF_a,GF_b,GF_c);
+                printf("\n\n\n GF realise percentage %d \n",GF_kj_array[form_count][seg_count][4]);
                 printf("\n\n\n GF result %d \n",GF_kj_array[form_count][seg_count][5]);
-                return GF_kj_array[form_count][seg_count][5];
+                return GF_kj_array[form_count][seg_count][5]; // note the calling function should check this as the return result
              }
 
 
