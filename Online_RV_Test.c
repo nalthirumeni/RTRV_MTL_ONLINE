@@ -25,6 +25,7 @@
 */
 
 
+
 #include <stdio.h>  // for standard io operations
 #include <stdlib.h> // for use malloc
 #include <string.h> // for string processing
@@ -37,6 +38,17 @@
 #define MAX_SEG 64      // number segment max. variables in longest RVRT_MTL formulas (S1,S2..)
 #define ASC_COUNT 256 // general purpose asserts
 
+#define ASC_MAX_ROWS 10  // This metric to be arrived after the intermediate NAL_MTL definitions.
+#define ASC_NUM_COLS 72  // this is the worse case up/low time limit that can be specified by the user or equals to the mission time units(max).
+
+#define MAX_ROWS 10  // define the no. of total mission time units here, for example 2 hours is 7200 sec. if the time granularity considered is 1 sec.
+#define NUM_COLS 72   // Number of atomic propositions to be monitored is to be defined here.
+
+
+char data_1[ASC_MAX_ROWS][ASC_NUM_COLS] = {{1}};
+
+char data[MAX_ROWS][NUM_COLS] = {{0}};
+
 
 
 ///////////////////////////////////
@@ -45,8 +57,6 @@
 //DATA STRUCTURES
 
 unsigned int AP_UPDATE [NUM_APS+1] = {1};                  // FOR EVERY TIME STAMP UPDATE
-
-char data[MAX_ROWS][NUM_COLS] = {{1}};           // FOR RETRIVING ANY TIMESTAMPED ROW DATA AND TO RETRIEVE ANY COLUM TIME STAMPED DATA(LOW AND HIGH TIME LIMITS)
 
 unsigned int ASC_UPDATE [ASC_COUNT] = {1};                  // general asserts list, for manupulation suing verdict operator
 
@@ -70,6 +80,11 @@ unsigned int F_array [FORMULA_COUNT][MAX_SEG][5] ={{{0}}};
 
 
 int timestamp;
+int row_index;
+char line[200];
+char headers[NUM_COLS][500];
+
+
 
 float G_realise_percent;
 float F_realise_percent;
@@ -258,4 +273,78 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
          }
 
  ////////////////////////  F operator ends.
+
+
+///////////////////////////////////
+// GF_operator - Infinitely Often
+
+//     ∀k ≥ a ∧ k ≤ b . ∃j ≥ k ∧ j ≤ b : (Aj ⊨ p)  where a,b are low and up time limit and 'p' is the Atomic proposition(AP) of a RTRV_MTL subformula to be evaluated.
+
+
+// Function for NAL_MTL_ GF - the infinitely often operator
+
+//unsigned int GF_kj_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional array for handling k and j values during GF operations,x= formula count.y=max. segment count found in any one of the formula.Z=5 (S_TS, E_TS, k, j, GF_result)
+//Z=6 (0=S_TS, 1=E_TS, 2=k , 3=j, 4=GF_percent,5=GF_result); S_TS = starting time stamp,E_TS= ending time stamp
+
+  int NAL_MTL_GF(int p,unsigned int form_count,unsigned int seg_count)
+
+        {
+
+           printf("\n Receiving inside GF_function  p=%d and time stamp = %d,start time=%d\n", p,timestamp,GF_kj_array[form_count][seg_count][0]);
+          // printf("\n GF_kj_array[5][10][0] = %d, GF_kj_array[5][10][1] = %d\n",GF_kj_array[5][10][0],GF_kj_array[5][10][1]);
+          if (GF_kj_array[form_count][seg_count][0] == timestamp) //checking current time equals to the start time of the segment
+          {
+           printf("\n Inside GF before init k as start time =%d \n", GF_kj_array[form_count][seg_count][2]);
+           GF_kj_array[form_count][seg_count][2]=GF_kj_array[form_count][seg_count][0]; // initialise k = start time
+           printf("\n After init. in GF - k as start time =%d \n", GF_kj_array[form_count][seg_count][2]);
+          }
+
+
+            if (p == 1 )
+                {
+
+
+                GF_kj_array[form_count][seg_count][2]=timestamp;  // k = timestamp, till this time point GF holding true...
+                GF_kj_array[form_count][seg_count][3] = 1; // j =1
+                printf("\n while p =1,found j =1, and  updated k to current timestamp k =%d\n",GF_kj_array[form_count][seg_count][2]);
+                }
+
+            else if (p == 0 )
+                {
+                GF_kj_array[form_count][seg_count][3] = 0; // j =0
+                printf("\n while p =0,found j=0, and   k - timestamp (last time j=0), k =%d\n\n",GF_kj_array[form_count][seg_count][2]);
+
+                }
+
+// GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=6 (S_TS, E_TS, k , j, GF_percent,GF_result)
+
+            if (GF_kj_array[form_count][seg_count][1] == timestamp ) //checking current time equals to the end time of the segment
+
+             {
+               printf("\n at the end time - GF_kj_array[5][10][0] = %d, GF_kj_array[5][10][1] = %d\n",GF_kj_array[5][10][0],GF_kj_array[5][10][1]);
+                GF_kj_array[form_count][seg_count][5] = GF_kj_array[form_count][seg_count][3]; //result of GF operation,result = last value of j
+                //even only the last value of p =1 then GF is success
+                int GF_a =GF_kj_array[form_count][seg_count][0]; // start time
+                int GF_b =GF_kj_array[form_count][seg_count][1];  // end time
+                int GF_c=GF_b-GF_a; // total time duration for this property to evaluate.
+                int d = GF_kj_array[form_count][seg_count][2];
+                float e=(((float)(d-GF_a))/((float) (GF_c))) *100;
+               // printf("a=%d,b=%d,c=%d,d=%d,e=%f\n",GF_a,GF_b,GF_c,d,e);
+                GF_kj_array[form_count][seg_count][4] = ((int)e); // realise percentage
+                printf("GF_kj_array[form_count][seg_count][4]\n",GF_kj_array[form_count][seg_count][4]);
+                printf("\n reached end of the GF time window.\n ");
+                printf("\nLast time j=1 at time stamp = %d\n",GF_kj_array[form_count][seg_count][2]);//k value
+                printf("\n Current timestamp=%d,start time of GF = %d ,End time of GF = %d, Total Duration = %d,",timestamp,GF_a,GF_b,GF_c);
+                printf("\n\n\n GF realise percentage %d \n",GF_kj_array[form_count][seg_count][4]);
+                printf("\n\n\n GF result %d \n",GF_kj_array[form_count][seg_count][5]);
+                return GF_kj_array[form_count][seg_count][5]; // note the calling function should check this as the return result
+             }
+
+
+    return 0; //
+
+
+            }  // GF function ends
+
+////////////////////////////////////////
 
