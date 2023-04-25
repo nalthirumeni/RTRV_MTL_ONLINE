@@ -95,13 +95,20 @@ float S_realise_percent;
 float W_realise_percent;
 
 
+
 // Function prototypes.
+
+// Function to get AP by column from DAQ csv file. - for testing
+int* get_data_by_AP(int col_index, int start_TS, int end_TS);
 
 //Global
 int NAL_MTL_G(int p,unsigned int form_count,unsigned int seg_count);
 
 //Finally
 int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count);
+
+//GF
+int NAL_MTL_GF(int p,unsigned int form_count,unsigned int seg_count);
 
 
 
