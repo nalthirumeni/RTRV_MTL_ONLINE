@@ -838,7 +838,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
 
             return 0; // next iteration
 
-    }  // until operator ends
+    }  // until  operator ends.
 
 
 
