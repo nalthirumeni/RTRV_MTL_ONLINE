@@ -63,7 +63,7 @@ unsigned int GF_kj_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimens
 // GF_kj_array[x][y][z] = [for index] [seg index] [z],Z=5 (S_TS, E_TS, k , j, GF_percent,GF_result); S_TS = starting time stamp,E_TS= ending time stamp
 
 unsigned int FG_ji_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimensional array for handling k and j  and i etc., values during FG operations,x= formula count.y=max. segment count found in any one of the formula.Z=5 (S_TS, E_TS, k, j, GF_result)
- //FG_kj_array[FORMULA_COUNT][MAX_SEG][5] = {{{}}}; // [for index] [seg index] [z],Z=6 (S_TS, E_TS,j, i,GF_percent,GF_result); S_TS = starting time stamp,E_TS= ending time stamp
+ //FG_kj_array[FORMULA_COUNT][MAX_SEG][6] = {{{}}}; // [for index] [seg index] [z],Z=6 (S_TS, E_TS,j, i,GF_percent,GF_result); S_TS = starting time stamp,E_TS= ending time stamp
 
 unsigned int U_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=4 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
 unsigned int S_array[FORMULA_COUNT][MAX_SEG][9] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=prev_q holder,6=k_p,7=m_q,8=n_q
@@ -105,6 +105,11 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count);
 
 //GF
 int NAL_MTL_GF(int p,unsigned int form_count,unsigned int seg_count);
+
+//FG
+int NAL_MTL_FG(int p,unsigned int form_count,unsigned int seg_count);
+
+
 
 
 
@@ -208,7 +213,7 @@ int main()
     // format int* col_data = get_data_by_AP(col_index, start_row, end_row);
 
     // input for GF here...
-
+/*
         int start_TS=3;
         int end_TS=19;
         int col_index =5;//ap index
@@ -239,11 +244,54 @@ int main()
 
         int ss = NAL_MTL_GF(p,5,10);
 
+        } // for loop ends
+
+        */
+
+///////////////////////////////////////
+
+ // Testing FG operator
+
+ // input for FG here...
+
+        int start_TS=2;
+        int end_TS=30;
+        int col_index =5;//ap index
+
+        int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
+        int end_in_array = end_TS -1;
+
+        int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
+
+        FG_ji_array[5][10][0] =start_TS; // start timestamp
+        FG_ji_array[5][10][1] =end_TS; // end timestamp
 
 
-        }
+         printf("\n\n\n FG function - Sending the values of P per every 1 sec now....\n");
+
+         printf("\n start time -   = %d, end time -   = %d\n",FG_ji_array[5][10][0],FG_ji_array[5][10][1]);
+
+        for (int i = start_in_array; i <= end_in_array; i++)
+        {
+        sleep(1);
+        timestamp =i+1;
+        p= data[i][col_index]; // -1 considering that arrays stats with 0 index.
+        //printf("AP id/index = %d, time stamp= %d: AP value p = %d\n", col_index,i, col_data_1[i - start_TS]);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+     //    printf("\nSending - AP_id/index = %d, time stamp= %d: AP value p = %d\n", col_index,timestamp, p);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+
+        // test FG here...
+
+        //int NAL_MTL_FG(int p,unsigned int form_count,unsigned int seg_count)
+
+        int ss = NAL_MTL_FG(p,5,10); // ap index, formula index and segment index
+
+        } // for loop ends
+
+
+
 
     return 0;
+
     }
 
 
@@ -458,7 +506,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
             if (GF_kj_array[form_count][seg_count][1] == timestamp ) //checking current time equals to the end time of the segment
 
              {
-               printf("\n at the end time - GF_kj_array[5][10][0] = %d, GF_kj_array[5][10][1] = %d\n",GF_kj_array[5][10][0],GF_kj_array[5][10][1]);
+                printf("\n at the end time - GF_kj_array[5][10][0] = %d, GF_kj_array[5][10][1] = %d\n",GF_kj_array[5][10][0],GF_kj_array[5][10][1]);
                 GF_kj_array[form_count][seg_count][5] = GF_kj_array[form_count][seg_count][3]; //result of GF operation,result = last value of j
                 //even only the last value of p =1 then GF is success
                 int GF_a =GF_kj_array[form_count][seg_count][0]; // start time
@@ -484,3 +532,137 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
             }  // GF function ends
 
 ////////////////////////////////////////
+
+
+///////////////////////////////////////////
+
+
+///////////////////////////////////
+
+//FG
+
+// Function for NAL_MTL_FG - the eventually forever operator.
+
+//∃j (a ≤ j ≤ b) ∧ (∀i (a ≤ i < j) : (Ai ⊨ p ∨ Ai ⊭ p)  ∧  (∀i (j ≤ i ≤ b) : Ai ⊨ p)
+
+// FG_ji_array [FORMULA_COUNT][MAX_SEG][z=6]
+
+//z index detail: 0=start time, 1= end time, 2=j,3=i(prev.p),4=FG_realise_percent,5=result of FG.
+
+
+
+    int NAL_MTL_FG(int p,unsigned int form_count,unsigned int seg_count)
+
+        {
+
+      //  printf("\n Receiving inside FG_function  p=%d and time stamp = %d,start time=%d,end time=%d\n", p,timestamp,FG_ji_array[form_count][seg_count][0],FG_ji_array[form_count][seg_count][1]);
+        if (FG_ji_array[form_count][seg_count][0] == timestamp)
+          {
+           printf("\n Inside FG before init j =%d  and i =%d \n", FG_ji_array[form_count][seg_count][2],FG_ji_array[form_count][seg_count][3]);
+           FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1]; // initialise j = end time
+           FG_ji_array[form_count][seg_count][3] =1; //// initialise prvious val. og AP(P), i = 1
+           printf("\n After init j as end time =%d  and i =%d \n", FG_ji_array[form_count][seg_count][2],FG_ji_array[form_count][seg_count][3]);
+          }
+
+//j is the point from which p becomes '1' forever, befre j p can be 0 or 1 arbitrarily...
+
+         if (FG_ji_array[form_count][seg_count][0] == timestamp) //start time
+
+         {
+
+            if  ( (p && FG_ji_array[form_count][seg_count][3]) == 1  )
+
+            {
+              FG_ji_array[form_count][seg_count][2]=timestamp; // make j= current timestamp
+              printf("\n Found at the start timestamp p=1, so setting j=start time stamp (current timestamp) now p=%d, j=%d and i =%d \n",p, FG_ji_array[form_count][seg_count][2],FG_ji_array[form_count][seg_count][3]);
+            }
+
+             else if  ( (p && FG_ji_array[form_count][seg_count][3]) == 0  )
+
+            {
+
+                FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time, hopinf at end p may become 1
+            }
+
+         }
+
+
+         /* after first time stamp do the following
+
+         let p= current value of AP and i= previous value of AP taken from global array
+
+         p=0,i=0 : make j = the end time stamp
+         p=0,i=1 : make j = the end time stamp, since p again became 0
+         p=1,i=0 : make j = the current time stamp, since p=1 and we found new j point, and p may continue to be 1...
+         p=1,i=1 : make j = do not change j let the previous  j time stamp remain as it is, since p = 1 and i=1 continuously..
+
+         P Thirumeni        12.4.23
+
+         */
+
+            if ( (p == 1) && (FG_ji_array[form_count][seg_count][3] == 0) ) // p=1,prev_p =0
+
+                {
+                FG_ji_array[form_count][seg_count][2]= timestamp; // make j = current timestamp hoping from this point all future p's will be 1.
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result considering two values at end
+                printf("\n At timestamp =%d,Found  p is 1 and prev_p is 0, now p=%d, prev_p=i =%d and updated j=%d \n",timestamp,p, FG_ji_array[form_count][seg_count][3],FG_ji_array[form_count][seg_count][2]);
+               // FG_ji_array[form_count][seg_count][3] = 1; // update i =1 ( current i  to previous i)
+                }
+
+            if ( (p == 1) && (FG_ji_array[form_count][seg_count][3] == 1) )
+
+                {
+                printf("\n At timestamp =%d,Found both p and prev_p are 1,   now p=%d, prev_p=i=%d and j=%d \n",timestamp,p, FG_ji_array[form_count][seg_count][3],FG_ji_array[form_count][seg_count][2]);
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end values 1,1
+               // FG_ji_array[form_count][seg_count][3] = 1; // update i =1
+                }
+
+
+
+            if ( (p == 0) && (FG_ji_array[form_count][seg_count][3] == 0) )
+                {
+
+
+                FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+                printf("\n At timestamp =%d, Found both p & prev_p=i becoming 0, now p=%d, prev_p=i=%d,j=%d \n",timestamp,p, FG_ji_array[form_count][seg_count][3],FG_ji_array[form_count][seg_count][2]);
+              //  FG_ji_array[form_count][seg_count][3] = 0; // update prev_p=i =0
+                }
+
+            if ( (p == 0) && (FG_ji_array[form_count][seg_count][3] == 1) )
+                {
+
+
+                FG_ji_array[form_count][seg_count][2]=FG_ji_array[form_count][seg_count][1] ; //  j = end time
+                FG_ji_array[form_count][seg_count][5] = (p  && FG_ji_array[form_count][seg_count][3]) ; //result for the end
+             //   FG_ji_array[form_count][seg_count][3] = 0; // update prev_p=i =0
+                printf("\n At timestamp =%d,Found  p is 0 and i=prev_p is 1 , now p=%d, prev_p=i=%d,j=%d \n",timestamp,p, FG_ji_array[form_count][seg_count][3],FG_ji_array[form_count][seg_count][2]);
+                }
+
+                  FG_ji_array[form_count][seg_count][3] = p; // update i =p ( current i as the previous i)
+
+            if (FG_ji_array[form_count][seg_count][1] == timestamp) //end time reached
+
+             {
+
+               ///////////////////
+                int FG_a =FG_ji_array[form_count][seg_count][0]; // start time
+                int FG_b =FG_ji_array[form_count][seg_count][1];  // end time
+                int FG_c =FG_b-FG_a; // total time duration for this property to evaluate.
+                //int d = FG_b-FG_ji_array[form_count][seg_count][2]; // last time j was 1
+                int d = FG_ji_array[form_count][seg_count][2]; // last time j was 1
+                float e= (((float)(FG_b-d))/((float) (FG_c))) *100;
+                FG_ji_array[form_count][seg_count][4] = ((int)e); // realise percentage of FG, this tells from start point how quickly eventually p became '1', higher the this percentage quicker the eventually forever condition reached.
+                printf("\nFG_ji_array[form_count][seg_count][4]\n",FG_ji_array[form_count][seg_count][4]);
+                printf("a=%d,b=%d,c=%d,d=%d,e=%f\n",FG_a,FG_b,FG_c,d,e);
+                printf("\n\n\n FG realised from timestamp=%d and percentage=%d \n",FG_ji_array[form_count][seg_count][2],FG_ji_array[form_count][seg_count][4]);
+                printf("\n\n\n FG realise result %d \n",FG_ji_array[form_count][seg_count][5]);
+                return FG_ji_array[form_count][seg_count][5]; // this si the result of FG operation do not consider fucntion return 0 below from the calling function.
+             }
+
+
+    return 0; // FG_ends
+}
+
+
+//////////////////////  FG_ends
