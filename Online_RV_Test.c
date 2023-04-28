@@ -66,8 +66,9 @@ unsigned int FG_ji_array [FORMULA_COUNT][MAX_SEG][6] = {{{0}}};  // three dimens
  //FG_kj_array[FORMULA_COUNT][MAX_SEG][6] = {{{}}}; // [for index] [seg index] [z],Z=6 (S_TS, E_TS,j, i,GF_percent,GF_result); S_TS = starting time stamp,E_TS= ending time stamp
 
 unsigned int U_array[FORMULA_COUNT][MAX_SEG][4] = {{{}}};// [for index] [seg index] [z],Z=4 (0=S_TS, 1=E_TS,2=U_percent,3=result,i)
-unsigned int S_array[FORMULA_COUNT][MAX_SEG][9] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=prev_q holder,6=k_p,7=m_q,8=n_q
-unsigned int W_array[FORMULA_COUNT][MAX_SEG][6] = {{{}}};//  //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,5=all_p
+unsigned int S_array[FORMULA_COUNT][MAX_SEG][9] = {{{}}};// //z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j, 5=first time - q holder for (p0,q1)case, 6=k_p (p * prev_P),7=m_q (q * prev_q),8=n_q (prev_q for success case time stamps p=0 q=1)
+
+unsigned int W_array[FORMULA_COUNT][MAX_SEG][5] = {{{}}};// //z=5; index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4=all_p
 
 unsigned int G_array [FORMULA_COUNT][MAX_SEG][5] ={{{0}}};
 //[for_index] [seg_index] [z],Z=5     // 0=S_TS, 1=E_TS, 2=prev_g , 3=G_percent,4=G_result);
@@ -93,6 +94,7 @@ float W_realise_percent;
 
 
 // Function prototypes.
+//////////////////////////////////////////
 
 // Function to get AP by column from DAQ csv file. - for testing
 int* get_data_by_AP(int col_index, int start_TS, int end_TS);
@@ -111,6 +113,14 @@ int NAL_MTL_FG(int p,unsigned int form_count,unsigned int seg_count);
 
 //p U[S_t,E_t] q
 int NAL_MTL_U(int p,int q, int form_count,int seg_count);
+
+//p S[S_t,E_t] q
+int NAL_MTL_S(int p,int q, int form_count,int seg_count);
+
+//p W[a,b] q
+int NAL_MTL_W(int p,int q, int form_count,int seg_count);
+
+
 
 
 
@@ -137,36 +147,43 @@ int main()
     //array dimention 3 index detail -  0=S_TS, 1=E_TS, 2=prev_g , 3=G_percent,4=G_result);
     // fill start and end time and call G_func.
 
-    G_array[5][10][0] =3; // start timestamp
-    G_array[5][10][1] =18; // end timestamp
-    int p,q;
- // timestamp=3;// initial timestamp.
-    F_array[5][10][0] =3; // start timestamp
-    F_array[5][10][1] =18; // end timestamp
-/*
-    int p =0; // to be tested
-    int start_time = 3;
-    int end_time = 18;
 
-    for (int i=3 ; i<=18 ; i++)
-    {
-    sleep(1);
-    timestamp =i;
 
-    if (i == 17)
-    {
-       // p=1;
-    }
+   // p =1; // for G to be tested
+//    p =0; // for F to be tested
+   // int start_time = 3;
+ //   int end_time = 10;
+
+ //   for (int i=3 ; i<=10 ; i++)
+ //   {
+ //   sleep(1);
+ //   timestamp =i;
+
+  //  if (i == 7)
+   // {
+      //  p=0; // for G test
+  //      p=1; // for F test
+  //  }
+
+   // if (G_array[5][10][4] == 0)
+  // printf("befor if F result = %d",G_array[5][10][4]);
+   // if (G_array[5][10][4] == 1)
+  //  {
+    //    break;
+
+      //  printf("G result = %d",G_array[5][10][4]);
+  //      printf("F result = %d",G_array[5][10][4]);
+  //  }
 
     // Testing G operator.
-    //  int ss = NAL_MTL_G(p,5,10);
+    // int ss = NAL_MTL_G(p,5,10);
     // Testing F operator
-    //int ss = NAL_MTL_F(p,5,10); // formula 5 and segment 10
-     printf("\nsending p = %d, at timestamp %d \n ", p,timestamp);
-    }
+   // int ss = NAL_MTL_F(p,5,10); // formula 5 and segment 10
+   //  printf("\nsending p = %d, at timestamp %d \n ", p,timestamp);
+   // }
 
 
-    */
+
 
     // Testing GF operator
     ///////////////
@@ -213,19 +230,123 @@ int main()
 
     fclose(fp);
 //////////////////////////////////
-
+/*
     ///////////////
     // format int* col_data = get_data_by_AP(col_index, start_row, end_row);
 
-    // input for GF here...
-/*
-        int start_TS=3;
-        int end_TS=19;
-        int col_index =5;//ap index
+
+    //////////////////
+
+    ////// Testing G operator
+
+    // Testing G operator.
+    // int ss = NAL_MTL_G(p,5,10);
+    int p,q;
+    int start_TS=3;
+    int end_TS=12;
+    int col_index =4;//ap index
+
+
+
+ // timestamp=3;// initial timestamp.
+  //  F_array[5][10][0] =3; // start timestamp
+  //  F_array[5][10][1] =10; // end timestamp
+  //  F_array[5][10][4] =2; // dummy result
+
+
 
         int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
         int end_in_array = end_TS -1;
 
+        int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
+
+    G_array[5][10][0] =start_TS; // start timestamp
+    G_array[5][10][1] =end_TS; // end timestamp
+    G_array[5][10][4] =2; // dummy result
+
+    for (int i = start_in_array; i <= end_in_array; i++)
+        {
+        sleep(1);
+        timestamp =i+1;
+        p= data[i][col_index];
+        //printf("AP id/index = %d, time stamp= %d: AP value p = %d\n", col_index,i, col_data_1[i - start_TS]);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+         printf("\n G testing - Sending - AP id/index = %d, time stamp= %d: AP value p = %d\n", col_index,timestamp, p);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+
+        // test G here...
+
+        int ss = NAL_MTL_G(p,5,10);
+
+
+       // printf("befor if G result = %d",G_array[5][10][4]);
+       if (G_array[5][10][4] == 0)
+        {
+        break;
+        printf("G result = %d",G_array[5][10][4]);
+        }
+
+        } // G test for loop ends
+
+////////////////////
+
+*/
+
+  ////// Testing F operator
+
+  /*
+
+    // int ss = NAL_MTL_F(p,5,10);
+    int p,q;
+    int start_TS=1;
+    int end_TS=10;
+    int col_index =5;//ap index
+
+
+
+
+        int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
+        int end_in_array = end_TS -1;
+
+        int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
+
+    F_array[5][10][0] =start_TS; // start timestamp
+    F_array[5][10][1] =end_TS; // end timestamp
+    F_array[5][10][4] =2; // dummy result
+
+    for (int i = start_in_array; i <= end_in_array; i++)
+        {
+        sleep(1);
+        timestamp =i+1;
+        p= data[i][col_index];
+        //printf("AP id/index = %d, time stamp= %d: AP value p = %d\n", col_index,i, col_data_1[i - start_TS]);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+         printf("\n F testing - Sending - AP id/index = %d, time stamp= %d: AP value p = %d\n", col_index,timestamp, p);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+
+        // test F here...
+
+        int ss = NAL_MTL_F(p,5,10);
+
+
+       printf("before if F result = %d",F_array[5][10][4]);
+       if (F_array[5][10][4] == 1)
+        {
+        break;
+        printf("F result = %d",F_array[5][10][4]);
+        }
+
+        } // F test for loop ends
+
+////////////////////
+
+
+
+    // input for GF here...
+
+        int start_TS=3;
+        int end_TS=14;
+        int col_index =5;//ap index
+
+        int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
+        int end_in_array = end_TS -1;
+        int p;
         int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
 
         GF_kj_array[5][10][0] =start_TS; // start timestamp
@@ -251,28 +372,28 @@ int main()
 
         } // for loop ends
 
-        */
+*/
 
 ///////////////////////////////////////
-
+/*
  // Testing FG operator
 
  // input for FG here...
-/*
-        int start_TS=2;
-        int end_TS=30;
+
+        int start_TS=1;
+        int end_TS=10;
         int col_index =5;//ap index
 
         int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
         int end_in_array = end_TS -1;
-
+        int p;
         int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
 
         FG_ji_array[5][10][0] =start_TS; // start timestamp
         FG_ji_array[5][10][1] =end_TS; // end timestamp
 
 
-         printf("\n\n\n FG function - Sending the values of P per every 1 sec now....\n");
+         printf("\n\n\n FG function - Sending the values of P%d per every 1 sec now....\n",col_index);
 
          printf("\n start time -   = %d, end time -   = %d\n",FG_ji_array[5][10][0],FG_ji_array[5][10][1]);
 
@@ -291,8 +412,11 @@ int main()
         int ss = NAL_MTL_FG(p,5,10); // ap index, formula index and segment index
 
         } // for loop ends
-*/
+
+        */
 //////////////////////////////
+
+/*
 
 // U operator testing....
 
@@ -300,11 +424,11 @@ int main()
 
 // input for U here...
 
-        int start_TS=3;
-        int end_TS=12;
+        int start_TS=1;
+        int end_TS=10;
         int col_index =4;//ap index
         int col_index2 =5;//ap index
-
+        int p,q;
         int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
         int end_in_array = end_TS -1;
 
@@ -333,7 +457,7 @@ int main()
         timestamp =i+1;
         p= data[i][col_index]; // -1 considering that arrays stats with 0 index.
         q= data[i][col_index2]; // -1 considering that arrays stats with 0 index.
-        printf("AP id/index of p= %d,column index of q=%d, time stamp= %d: AP value p =%d, q =%d\n",col_index,col_index2,timestamp, p,q);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+        printf("Until AP id/index of p= %d,column index of q=%d, time stamp= %d: AP value p =%d, q =%d\n",col_index,col_index2,timestamp, p,q);//here p =col_data_1[i - start_TS], considerring array index starting at 0
       //  printf("\nSending - AP_id/index = %d, time stamp= %d: AP value p = %d\n", col_index,timestamp, p);//here p =col_data_1[i - start_TS], considerring array index starting at 0
 
         // test U here...
@@ -354,13 +478,164 @@ int main()
 
 
 
-        } // for loop ends
+        } // U testing for loop ends
 
 //////////////////////////////
 
+*/
+
+
+//////////////////////////////
+
+/*
+
+// S operator testing....
+
+//int NAL_MTL_S(int p,int q, int form_count,int seg_count)
+
+//z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,
+// 5=first time - q holder for (p0,q1)case, 6=k_p (p * prev_P),7=m_q (q * prev_q),8=n_q (prev_q for success case time stamps p=0 q=1)
+
+// input for S here...
+
+        int start_TS=1;
+        int end_TS=10;
+        int col_index =4;//ap index
+        int col_index2 =5;//ap index
+        int p,q;
+        int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
+        int end_in_array = end_TS -1;
+
+        // get p
+      //  int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
+
+        //get q
+    //    int* col_data_2 = get_data_by_AP(col_index2, start_in_array, end_in_array); // ap index, start time, end time
 
 
 
+        S_array[5][10][0] =start_TS; // start timestamp
+        S_array[5][10][1] =end_TS; // end timestamp
+        S_array[5][10][3] =2; // dummy result
+
+
+      //   printf("\n\n\n FG function - Sending the values of P per every 1 sec now....\n");
+
+        printf("\n 1 Strong Until start time -   = %d, end time -   = %d, result =%d\n",S_array[5][10][0],S_array[5][10][1],S_array[5][10][3]);
+
+        for (int i = start_in_array; i <= end_in_array; i++)
+        {
+        sleep(1);
+
+        //printf("\n 2 Strong Until start time -   = %d, end time -   = %d\n",S_array[5][10][0],S_array[5][10][1]);
+        timestamp =i+1;
+        p= data[i][col_index]; // -1 considering that arrays stats with 0 index.
+        q= data[i][col_index2]; // -1 considering that arrays stats with 0 index.
+        printf("\nStrong until AP id/index of AP  p %d,column index of AP q%d, time stamp= %d: AP value p =%d, q =%d\n",col_index,col_index2,timestamp, p,q);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+      //  printf("\nSending - AP_id/index = %d, time stamp= %d: AP value p = %d\n", col_index,timestamp, p);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+
+        // test U here...
+
+        //format  int NAL_MTL_U(int p,int q, int form_count,int seg_count)
+
+
+
+        //z=4 index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result.
+     //   printf(" \nbefore call func.timestamp=%d,S_array[5][10][3]=%d\n",timestamp,S_array[5][10][3]);
+        int ss = NAL_MTL_S(p,q,5,10); // p,q, formula index, seg. index.
+    //    printf(" after call func.timestamp=%d,S_array[5][10][3]=%d\n",timestamp,S_array[5][10][3]);
+        if (S_array[5][10][3] == 0)
+        {
+        break;
+        printf("break at timestamp=%d,S_array[5][10][3]=%d",timestamp,U_array[5][10][3]);
+        }
+
+
+
+        } // strong until testing.....   for loop ends
+
+
+
+
+      //////
+
+
+    ////////////////// Weak until testing from here.
+
+*/
+
+////////////////////////////
+
+
+
+/*
+//int NAL_MTL_W(int p,int q, int form_count,int seg_count)
+
+
+
+// input for W here...
+
+        int start_TS=1;
+        int end_TS=10;
+        int col_index =4;//ap index
+        int col_index2 =5;//ap index
+        int p,q;
+        int start_in_array = start_TS -1;// -1 considering that arrays stats with 0 index.
+        int end_in_array = end_TS -1;
+
+        // get p
+      //  int* col_data_1 = get_data_by_AP(col_index, start_in_array, end_in_array); // ap index, start time, end time
+
+        //get q
+    //    int* col_data_2 = get_data_by_AP(col_index2, start_in_array, end_in_array); // ap index, start time, end time
+
+
+
+        W_array[5][10][0] =start_TS; // start timestamp
+        W_array[5][10][1] =end_TS; // end timestamp
+        W_array[5][10][3] =2; // dummy result
+
+
+      //   printf("\n\n\n FG function - Sending the values of P per every 1 sec now....\n");
+
+        printf("\n 1 Weak  Until start time -   = %d, end time -   = %d, result =%d\n",W_array[5][10][0],W_array[5][10][1],W_array[5][10][3]);
+
+        for (int i = start_in_array; i <= end_in_array; i++)
+        {
+        sleep(1);
+
+        //printf("\n 2 Strong Until start time -   = %d, end time -   = %d\n",S_array[5][10][0],S_array[5][10][1]);
+        timestamp =i+1;
+        p= data[i][col_index]; // -1 considering that arrays stats with 0 index.
+        q= data[i][col_index2]; // -1 considering that arrays stats with 0 index.
+        printf("\n Weak until AP id/index of AP  p %d,column index of AP q%d, time stamp= %d: AP value p =%d, q =%d\n",col_index,col_index2,timestamp, p,q);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+      //  printf("\nSending - AP_id/index = %d, time stamp= %d: AP value p = %d\n", col_index,timestamp, p);//here p =col_data_1[i - start_TS], considerring array index starting at 0
+
+        // test W here...
+
+
+    // format int NAL_MTL_W(int p,int q, int form_count,int seg_count);
+
+     //   printf(" \nbefore call func.timestamp=%d,S_array[5][10][3]=%d\n",timestamp,S_array[5][10][3]);
+
+        int ss = NAL_MTL_W(p,q,5,10); // p,q, formula index, seg. index.
+
+    //    printf(" after call func.timestamp=%d,S_array[5][10][3]=%d\n",timestamp,S_array[5][10][3]);
+        if (W_array[5][10][3] != 2)
+        {
+        break;
+        printf("break at timestamp=%d,S_array[5][10][3]=%d",timestamp,W_array[5][10][3]);
+        }
+
+
+
+        } // weak until test for loop ends
+
+
+*/
+
+
+    printf("NAL_RV_End of main here....");
 
     return 0;
 
@@ -368,6 +643,10 @@ int main()
 
 
 ///////////////// main ends here.
+
+
+
+// Function Definitions from here.....
 
 //////////////////////////////////
 
@@ -425,7 +704,7 @@ int* get_data_by_AP(int col_index, int start_TS, int end_TS) //get columnwise da
 //////////////////////////////////
 
 
-// Fucntion Definitions from here.....
+
 
 //Globally
 
@@ -436,13 +715,13 @@ int* get_data_by_AP(int col_index, int start_TS, int end_TS) //get columnwise da
           printf("\n Receiving inside G_function  p=%d and time stamp = %d\n", p,timestamp);
           if (G_array[form_count][seg_count][0] == timestamp) // checking start time
           {
-           printf("\n Inside G init before  value of prev_g =%d \n", G_array[form_count][seg_count][2]);
+           printf("\n Inside G init before  value of prev_g =%d,start time=%d,end time=%d\n", G_array[form_count][seg_count][2],G_array[form_count][seg_count][0],G_array[form_count][seg_count][1]);
            G_array[form_count][seg_count][2]=1; // initialise prev_g =1
            printf("\n Inside G init after value of prev_g =%d \n", G_array[form_count][seg_count][2]);
           }
 
-           G_array[form_count][seg_count][4]=G_array[form_count][seg_count][2] && p ; // prev_g && current g
-            printf("\n evaluated G = %d\n\n", G_array[form_count][seg_count][4]);
+             G_array[form_count][seg_count][4]=G_array[form_count][seg_count][2] && p ; // prev_g && current g
+             printf("\n current evaluated G = %d\n\n", G_array[form_count][seg_count][4]);
 
             if (G_array[form_count][seg_count][4] == 0)
 
@@ -463,7 +742,8 @@ int* get_data_by_AP(int col_index, int start_TS, int end_TS) //get columnwise da
 
           if (G_array[form_count][seg_count][1] == timestamp) // checking end time
             {
-                printf("\n Inside at end time point %d",timestamp);
+                printf("\n Inside at end time point %d\n",timestamp);
+                printf("\n start time=%d,end time=%d\n",G_array[form_count][seg_count][0],G_array[form_count][seg_count][1]);
                 int a = G_array[form_count][seg_count][0];
                 int b = G_array[form_count][seg_count][1];
                 float c = b-a;
@@ -472,7 +752,7 @@ int* get_data_by_AP(int col_index, int start_TS, int end_TS) //get columnwise da
                 printf("\n Current timestamp=%d,start time of G = %d ,End time of G = %d, Total Duration = %f,",timestamp,a,b,c);
                 G_array[form_count][seg_count][3] = (int)d; // G success 100% at the end
                 printf("\n\n\n G realise percentage %d \n",G_array[form_count][seg_count][3]);
-                printf("\n\n\n G result %d \n",G_array[form_count][seg_count][4]);
+                printf(" G result %d \n",G_array[form_count][seg_count][4]);
                 return (G_array[form_count][seg_count][4]); // success G - at the end of time window
             }
 
@@ -509,7 +789,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
                 F_array[form_count][seg_count][3] = (int)d; // success case % at which the p becomes 1
                 printf("\n Current timestamp=%d,start time of F = %d ,End time of F = %d, Total Duration = %f,",timestamp,a,b,c);
                 printf("\n\n\n F realise percentage %d \n",F_array[form_count][seg_count][3]);
-                printf("\n\n\n F result %d \n",F_array[form_count][seg_count][4]);
+                printf(" F result %d \n",F_array[form_count][seg_count][4]);
                 return (F_array[form_count][seg_count][4]); // sucess case result at any point in time
             }
 
@@ -523,7 +803,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
                 F_array[form_count][seg_count][3] = (int)d; // // failure case all 'p's are 0
                 printf("\n Current timestamp=%d,start time of F = %d ,End time of F = %d, Total Duration = %f,",timestamp,a,b,c);
                 printf("\n\n\n F realise percentage %d \n",F_array[form_count][seg_count][3]);
-                printf("\n\n\n F result %d \n",F_array[form_count][seg_count][4]);
+                printf(". F result %d \n",F_array[form_count][seg_count][4]);
                 return (F_array[form_count][seg_count][4]); // failure case result at end time
             }
 
@@ -588,12 +868,12 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
                 float e=(((float)(d-GF_a))/((float) (GF_c))) *100;
                // printf("a=%d,b=%d,c=%d,d=%d,e=%f\n",GF_a,GF_b,GF_c,d,e);
                 GF_kj_array[form_count][seg_count][4] = ((int)e); // realise percentage
-                printf("GF_kj_array[form_count][seg_count][4]\n",GF_kj_array[form_count][seg_count][4]);
+                printf("GF_kj_array[form_count][seg_count][4]=%d\n",GF_kj_array[form_count][seg_count][4]);
                 printf("\n reached end of the GF time window.\n ");
                 printf("\nLast time j=1 at time stamp = %d\n",GF_kj_array[form_count][seg_count][2]);//k value
                 printf("\n Current timestamp=%d,start time of GF = %d ,End time of GF = %d, Total Duration = %d,",timestamp,GF_a,GF_b,GF_c);
                 printf("\n\n\n GF realise percentage %d \n",GF_kj_array[form_count][seg_count][4]);
-                printf("\n\n\n GF result %d \n",GF_kj_array[form_count][seg_count][5]);
+                printf(" GF result %d \n",GF_kj_array[form_count][seg_count][5]);
                 return GF_kj_array[form_count][seg_count][5]; // note the calling function should check this as the return result
              }
 
@@ -725,10 +1005,10 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
                 int d = FG_ji_array[form_count][seg_count][2]; // last time j was 1
                 float e= (((float)(FG_b-d))/((float) (FG_c))) *100;
                 FG_ji_array[form_count][seg_count][4] = ((int)e); // realise percentage of FG, this tells from start point how quickly eventually p became '1', higher the this percentage quicker the eventually forever condition reached.
-                printf("\nFG_ji_array[form_count][seg_count][4]\n",FG_ji_array[form_count][seg_count][4]);
+                printf("\nFG_ji_array[form_count][seg_count][4]=%d\n",FG_ji_array[form_count][seg_count][4]);
                 printf("a=%d,b=%d,c=%d,d=%d,e=%f\n",FG_a,FG_b,FG_c,d,e);
                 printf("\n\n\n FG realised from timestamp=%d and percentage=%d \n",FG_ji_array[form_count][seg_count][2],FG_ji_array[form_count][seg_count][4]);
-                printf("\n\n\n FG realise result %d \n",FG_ji_array[form_count][seg_count][5]);
+                printf(" FG realise result %d \n",FG_ji_array[form_count][seg_count][5]);
                 return FG_ji_array[form_count][seg_count][5]; // this si the result of FG operation do not consider fucntion return 0 below from the calling function.
              }
 
@@ -783,6 +1063,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
                 int U_c =U_b-U_a; // total time duration for this property to evaluate.
                 float e =( ((float)(timestamp-U_a))/ ((float)(U_c))) *100;
                 U_array[form_count][seg_count][2] = (int)(e);
+                printf("Until failed at time stamp=%d,when p=%d,q=%d\n",timestamp,p,q);
                 printf("\n U realise percentage=%d at timestamp=%d \n",U_array[form_count][seg_count][2],timestamp);
                 printf("\n U result=%d\n",U_array[form_count][seg_count][3]);
                 return (U_array[form_count][seg_count][3]); //return result failure
@@ -801,6 +1082,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
                 int U_c =U_b-U_a; // total time duration for this property to evaluate.
                 float e =( ((float)(timestamp-U_a))/ ((float)(U_c))) *100;
                 U_array[form_count][seg_count][2] = (int) (e);
+                printf("\n\nUntil succesful !! at time stamp=%d,when p=%d,q=%d\n",timestamp,p,q);
                 printf("\n U realise percentage %d at timestamp=%d \n",U_array[form_count][seg_count][2],timestamp);
                 printf("\n U result=%d\n",U_array[form_count][seg_count][3]);
                 return (U_array[form_count][seg_count][3]); //return result failure
@@ -829,7 +1111,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
                 float e =( ((float)(timestamp-U_a))/ ((float)(U_c))) *100;
                 U_array[form_count][seg_count][2] = (int) (e);
                 printf("\n U realise percentage %d at time stamp=%d\n",U_array[form_count][seg_count][2],timestamp);
-                printf("\n U result=%d\n",U_array[form_count][seg_count][3]);
+                printf("\n Until failed since All values of p are '1', Until Result=%d\n",U_array[form_count][seg_count][3]);
                 return (U_array[form_count][seg_count][3]); //return result failure
                 }
 
@@ -838,13 +1120,8 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
 
             return 0; // next iteration
 
-    }  // until  operator ends.
+    }  // until operator ends
 
-
-
-
-
-//////////////////////////////
 
 
 
@@ -1038,4 +1315,128 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
 //// strong until operator ends
 
 //////////////////////////////
+
+//////////////////////
+
+
+// weak until
+
+// Function for NAL_MTL_Weak_Until - the weak until operator.
+
+//z=5; index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4=all_p
+
+       // format  p W[a,b] q
+   int NAL_MTL_W(int p,int q, int form_count,int seg_count) // formula id, segment_id, kji index, 3 d array
+
+
+        {
+
+        // weak until,  j is the time point at which q holds true.
+
+        /*
+          p_now = 0,q_now=0 ; until failed.
+          p_now = 1,q_now=0 ; proceed to next iteration
+          p_now = 0,q_now=1 ; found j .exit
+          p_now = 1,q_now=1 ; found j .exit
+          also from start to end p_now all true ; property true.
+
+         P Thirumeni        12.4.23
+         */
+
+                 printf("\n receiving at Weak Until timestamp = %d, value of p =%d, value of q=%d\n",timestamp,p,q);
+             if ( (W_array[form_count][seg_count][0]) == timestamp)  // at start initialise..
+
+                 {
+                     printf("\n Before init all_p =%d\n",W_array[form_count][seg_count][4]);
+                     (W_array[form_count][seg_count][4])=1; //all_p init to 1 if p become 0 at some stage this will become 0
+                     printf("\n After init all_p =%d\n",W_array[form_count][seg_count][4]);
+                 }
+
+
+             if ( p==0 && q == 0) // p does not hold - property fails
+             {
+                (W_array[form_count][seg_count][3] = 0); // result - until failed
+
+
+                printf("\n at timestamp =%d,p=%d and  q=%d ",timestamp,p,q);
+                W_array[form_count][seg_count][2] =0; // realise percentage is 0 since all  values are either p holds true or all q holds true
+                int W_a =W_array[form_count][seg_count][0]; // start time
+                int W_b =W_array[form_count][seg_count][1];  // end time
+                int W_c =W_b-W_a; // total time duration for this property to evaluate.
+                float e =( ((float)(timestamp-W_a))/ ((float)(W_c))) *100;
+                W_array[form_count][seg_count][2] = (int) (e);
+
+                printf("\n Weak Until failed - realise percentage=%d and  at timestamp =%d ",W_array[form_count][seg_count][2],timestamp);
+                printf("\n Result =%d",W_array[form_count][seg_count][3]);
+                return (W_array[form_count][seg_count][3]); //return result
+
+                }
+
+//z index detail: 0=start time, 1= end time, 2=W_realise_percent,3=result.
+
+             if ( q == 1 )
+
+            {
+               // W_array[form_count][seg_count][4]=timestamp // j found at current time stamp, let us avoid this index to save memory
+               (W_array[form_count][seg_count][3] = q); // result
+
+                printf("\n at timestamp =%d,p=%d and  q=%d ",timestamp,p,q);
+                int W_a =W_array[form_count][seg_count][0]; // start time
+                int W_b =W_array[form_count][seg_count][1];  // end time
+                int W_c =W_b-W_a; // total time duration for this property to evaluate.
+                float e =( ((float)(timestamp-W_a))/ ((float)(W_c))) *100;
+                W_array[form_count][seg_count][2] = (int) (e);
+                printf("\n Weak Until Sucessful !!  - realise percentage=%d and  at timestamp =%d ",W_array[form_count][seg_count][2],timestamp);
+                printf("\n Result =%d",W_array[form_count][seg_count][3]);
+                return (W_array[form_count][seg_count][3]); //return result
+
+
+             }
+
+              if ( (p==1) && (q == 0) )
+
+            {
+               W_array[form_count][seg_count][2]= W_array[form_count][seg_count][1]; // hoping U holds at end time, move to nest iteration.
+                printf("\n iterating...\n");                                                                     // nothing to do, move to next iteration
+
+             }
+
+
+//z index detail: 0=start time, 1= end time, 2=W_realise_percent,3=result,4= all_p
+
+
+        if ( timestamp) // at every time stamp p && prev_p
+
+            {
+                (W_array[form_count][seg_count][4])= (p && (W_array[form_count][seg_count][4]));
+            }
+
+              if ( (W_array[form_count][seg_count][1] == timestamp) && (W_array[form_count][seg_count][4]) == 1 )
+
+              {
+
+                printf("\n at timestamp =%d,p=%d and  q=%d ",timestamp,p,q);
+                int W_a =W_array[form_count][seg_count][0]; // start time
+                int W_b =W_array[form_count][seg_count][1];  // end time
+                int W_c =W_b-W_a; // total time duration for this property to evaluate.
+                float e =( ((float)(timestamp-W_a))/ ((float)(W_c))) *100;
+                W_array[form_count][seg_count][2] = (int) (e);
+                W_array[form_count][seg_count][3] = W_array[form_count][seg_count][4];
+                printf("\n Weak Until Sucessful !!  - realise percentage=%d and  at timestamp =%d ",W_array[form_count][seg_count][2],timestamp);
+                printf("\n Result =%d",W_array[form_count][seg_count][3]);
+                printf("\n Alll values of P =%d",W_array[form_count][seg_count][4]);
+                return (W_array[form_count][seg_count][3]); //return result
+
+
+              }
+
+            return 2;
+
+    }  // weak until operator ends
+
+
+////////////////////////////////////////////////////
+
+
+/////////////////////////////
 
