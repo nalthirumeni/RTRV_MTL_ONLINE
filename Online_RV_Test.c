@@ -846,3 +846,196 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
 
 //////////////////////////////
 
+
+
+//////////////////////////////
+
+/////Strong Until
+/////////////////////////////
+
+
+
+
+// Function for NAL_MTL_Strong Until - the until operator.
+
+       // format  p S[a,b] q
+// unsigned int S_array[FORMULA_COUNT][MAX_SEG][9] = {{{}}};//
+
+    int NAL_MTL_S(int p,int q, int form_count,int seg_count) //
+
+        {
+          /*
+        // j is the time point at which q holds true.
+          p_now = 0,q_now=0 ; until failed.
+          p_now = 1,q_now=0 ; proceed to next iteration
+          p_now = 0,q_now=1 ; found j .
+          p_now = 1,q_now=1 ; until failed.
+          after found j, all points should be p_now=0 and q_now=1
+         P Thirumeni        12.4.23
+//z index detail: 0=start time, 1= end time, 2=U_realise_percent,3=result,4= found j,
+ 5=first time - q holder for (p0,q1)case, 6=k_p (p * prev_P),7=m_q (q * prev_q),8=n_q (prev_q for success case time stamps p=0 q=1)
+         */
+            //  printf("\n 3 Strong Until start time -   = %d, end time -   = %d,\n",S_array[5][10][0],S_array[5][10][1]);
+              printf("\n at timestamp = %d, value of p =%d, value of q=%d\n",timestamp,p,q);
+         //     printf("\n attatt before init start time S_array[form_count][seg_count][0]=%d\n",S_array[form_count][seg_count][0]);
+
+             if ((S_array[form_count][seg_count][0])== timestamp)
+             {
+
+              if ((p==0) && (q == 1))
+
+              {
+                printf("\n P has to hold atleast once but at the first instance itself p is  0 and q is 1 , at timestamp = %d, p=%d,q=%d\n",timestamp,p,q);
+                (S_array[form_count][seg_count][3] = 0); // result - until failed
+                int S_a =S_array[form_count][seg_count][0]; // start time
+                int S_b =S_array[form_count][seg_count][1];  // end time
+                int S_c =S_b-S_a; // total time duration for this property to evaluate.
+                float e =( ((float)(timestamp-S_a))/ ((float)(S_c))) *100;
+                S_array[form_count][seg_count][2] = (int) (e);
+                printf("\n Strong Until failed - realise percentage=%d and  at timestamp =%d ",S_array[form_count][seg_count][2],timestamp);
+                printf("\n Result =%d",S_array[form_count][seg_count][3]);
+                return (S_array[form_count][seg_count][3]); //return result failure
+              }
+
+
+
+              printf("\n at timestamp = %d, before init prev_p=%d,prev_q=%d,seg[5]=%d \n",timestamp,S_array[form_count][seg_count][6],S_array[form_count][seg_count][7],S_array[form_count][seg_count][5]);
+           //   printf("\n start time S_array[form_count][seg_count][0]=%d\n",S_array[form_count][seg_count][0]);
+              S_array[form_count][seg_count][6]= 1; // init previous value of p
+              S_array[form_count][seg_count][7]= 1; // init previous value of q
+              S_array[form_count][seg_count][5]= 0; // init previous value of q holds for (p0,q1) case
+              printf("\n at timestamp = %d, AFTER init prev_p=%d,prev_q=%d,seg[5]=%d \n",timestamp,S_array[form_count][seg_count][6],S_array[form_count][seg_count][7],S_array[form_count][seg_count][5]);
+          //    printf("\n inside init  before init start time S_array[form_count][seg_count][0]=%d\n",S_array[form_count][seg_count][0]);
+             }
+          //  printf("\n outside init  before init start time S_array[form_count][seg_count][0]=%d\n",S_array[form_count][seg_count][0]);
+
+                // p,p,p,p,q,q
+
+                //p=0,q=1 first success case here
+
+
+
+
+                // after SU occured p=0 q=1 cases ( success cases)
+              if ( (p==0) && (q == 1) &&(S_array[form_count][seg_count][5] ==1) && (S_array[form_count][seg_count][1] != timestamp))
+
+                {
+
+                printf("\n timestamp=%d,p=%d,q=%d,prev_p=%d,prev_q=%d,result=%d\n",timestamp,p,q,S_array[form_count][seg_count][6],S_array[form_count][seg_count][7],S_array[form_count][seg_count][3]);
+
+               (S_array[form_count][seg_count][8]) = (q && (S_array[form_count][seg_count][8])); // q & q_prev
+               (S_array[form_count][seg_count][3]) = (q && (S_array[form_count][seg_count][8])); //result
+
+                printf("\n After q holding true and p holding false at timestamp = %d, p=%d,q=%d, found_j =%d,(S_array[form_count][seg_count][5])=%d,(S_array[form_count][seg_count][8])=%d\n",timestamp,p,q,(S_array[form_count][seg_count][4]),(S_array[form_count][seg_count][5]),(S_array[form_count][seg_count][8]));
+                printf("\n result S_array[form_count][seg_count][3]=%d",S_array[form_count][seg_count][3]);
+                }
+
+
+                if ( (p==0) && (q == 1) &&(S_array[form_count][seg_count][5] == 0) )
+
+                {
+                printf("\n q holds before update timestamp = %d, p=%d,q=%d, found_j =%d,(S_array[form_count][seg_count][5])=%d,(S_array[form_count][seg_count][8])=%d\n",timestamp,p,q,(S_array[form_count][seg_count][4]),(S_array[form_count][seg_count][5]),(S_array[form_count][seg_count][8]));
+                S_array[form_count][seg_count][3] = q; // result
+               (S_array[form_count][seg_count][4])= timestamp;// first time, found j
+               (S_array[form_count][seg_count][5]) = 1;
+               (S_array[form_count][seg_count][8]) = q;
+                printf("\n First instance after q holding true and p holding false at timestamp = %d, p=%d,q=%d, found_j =%d,(S_array[form_count][seg_count][5])=%d,(S_array[form_count][seg_count][8])=%d\n",timestamp,p,q,(S_array[form_count][seg_count][4]),(S_array[form_count][seg_count][5]),(S_array[form_count][seg_count][8]));
+                printf("\n result S_array[form_count][seg_count][3]=%d",S_array[form_count][seg_count][3]);
+
+                }
+
+   //fail cases
+
+             if (( p==0 && q == 0) || ( p==1 && q == 1)) // both fail cases
+
+                {
+                 printf("\n Both p and q are 0 or both p and  q are 1 , at timestamp = %d, p=%d,q=%d\n",timestamp,p,q);
+                (S_array[form_count][seg_count][3] = 0); // result - until failed
+                int S_a =S_array[form_count][seg_count][0]; // start time
+                int S_b =S_array[form_count][seg_count][1];  // end time
+                int S_c =S_b-S_a; // total time duration for this property to evaluate.
+                float e =( ((float)(timestamp-S_a))/ ((float)(S_c))) *100;
+                S_array[form_count][seg_count][2] = (int) (e);
+                printf("\n Strong Until failed - realise percentage=%d and  at timestamp =%d ",S_array[form_count][seg_count][2],timestamp);
+                printf("\n Result =%d",S_array[form_count][seg_count][3]);
+
+
+                return (S_array[form_count][seg_count][3]); //return result failure
+                }
+
+
+                if ( ( p==1 && q == 0) && S_array[form_count][seg_count][8] ==1) // q holding already but p holds again
+                {
+                printf("\n Earlier q was holding at this time stamp (found j) =%d and P holds now at timestamp=%d, hence Strong Until failed.  p=%d,q=%d\n",S_array[form_count][seg_count][4],timestamp,p,q);
+                (S_array[form_count][seg_count][3] = 0); // result - until failed
+                int S_a =S_array[form_count][seg_count][0]; // start time
+                int S_b =S_array[form_count][seg_count][1];  // end time
+                int S_c =S_b-S_a; // total time duration for this property to evaluate.
+                float e =( ((float)(timestamp-S_a))/ ((float)(S_c))) *100;
+                S_array[form_count][seg_count][2] = (int) (e);
+                printf("\n Strong Until failed - realise percentage=%d and  at timestamp =%d ",S_array[form_count][seg_count][2],timestamp);
+                printf("\n Result =%d",S_array[form_count][seg_count][3]);
+                return (S_array[form_count][seg_count][3]); //return result failure
+                }
+
+                if ( timestamp) // for all iteration this update has to be done. // this includeds p=1 and q=0 cases
+                {
+                (S_array[form_count][seg_count][6])= (p && (S_array[form_count][seg_count][6])); // current p && prev_p
+                (S_array[form_count][seg_count][7])= (q && (S_array[form_count][seg_count][7])); // current q && prev_q
+                printf("\n at just iterating... timestamp =%d,p=%d and  q=%d\n ",timestamp,p,q);
+                printf("\n timestamp=%d,prev_p=%d,prev_q=%d\n ",timestamp,S_array[form_count][seg_count][6],S_array[form_count][seg_count][7]);
+                }
+
+            //end time results, if all time instances either p or q iis always 1, its a failure case
+
+             if ((S_array[form_count][seg_count][1])== timestamp) // at end time p=1, q=0 case also covered here...
+
+              {
+               if  (((S_array[form_count][seg_count][6]) == 1 ) || ((S_array[form_count][seg_count][7]) == 1 ) ) //fail case
+
+                    {
+                printf("\n at timestamp =%d,p=%d and  q=%d ",timestamp,p,q);
+                S_array[form_count][seg_count][2] =0; // realise percentage is 0 since all  values are either p holds true or all q holds true
+                S_array[form_count][seg_count][3] =0;
+                printf("\n Strong Until failed - realise percentage=%d and  at timestamp =%d ",S_array[form_count][seg_count][2],timestamp);
+                printf("\n Either All p are 1 or all q are 1, all p = %d,all q=%d",S_array[form_count][seg_count][6],S_array[form_count][seg_count][7]);
+                printf("\n Result =%d",S_array[form_count][seg_count][3]);
+                return (S_array[form_count][seg_count][3]); //return result
+                    }
+              }
+
+//z index detail: 0=start time, 1= end time, 2=S_realise_percent,3=result,4= found j,
+// 5=first time - q holder for (p0,q1)case, 6=k_p (p * prev_P),7=m_q (q * prev_q),8=n_q (prev_q for success case time stamps p=0 q=1)
+
+        //end time result
+             if (( p==0 && q == 1) && (S_array[form_count][seg_count][5] == 1) &&(S_array[form_count][seg_count][1] == timestamp)) // at end time
+
+                {
+
+                (S_array[form_count][seg_count][3]) == (q && (S_array[form_count][seg_count][5]) && (S_array[form_count][seg_count][8])); // q && jfound && prev_q
+                //(S_array[form_count][seg_count][4]) == q;
+                int S_a =S_array[form_count][seg_count][0]; // start time
+                int S_b =S_array[form_count][seg_count][1];  // end time
+                int S_c =S_b-S_a; // total time duration for this property to evaluate.
+                float e =( ((float)(S_array[form_count][seg_count][4]-S_a))/ ((float)(S_c))) *100;
+                S_array[form_count][seg_count][2] = (int) (e);
+                printf("timestamp,S_a=%d,S_b=%d,S_c=%d,e=%f",S_a,S_b,S_c,e);
+                printf("\n Strong Until Success - realise percentage=%d and  at timestamp =%d ",S_array[form_count][seg_count][2],S_array[form_count][seg_count][4]);
+                printf("\n Result =%d",S_array[form_count][seg_count][3]);
+
+
+                return (S_array[form_count][seg_count][3]); //return result success
+
+                }
+
+
+
+
+            return 2; // next iteration, returning 2 to indicate the formula not eveluated yet
+
+    }
+
+//// strong until operator ends
+
+//////////////////////////////
+
