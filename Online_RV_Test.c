@@ -1053,7 +1053,7 @@ int NAL_MTL_F(int p,unsigned int form_count,unsigned int seg_count)
 
 // format  p U[a,b] q
 
-//∃j (a ≤ j ≤ b) ∧ (∀i (a ≤ i < j) : (Ai ⊨ p ∨ Ai ⊭ p)  ∧  (∀i (j ≤ i ≤ b) : Ai ⊨ p)
+////φ1 U [a,b] φ2  iff ∃j (a ≤ j < b) ∧ ∀i (a ≤ i < j : (Ai ⊨ φ1 ∧ Ai ⊭ φ2)) ∧ (Ai ⊨ φ2 : i=j) ∧ ∀i (j+1 ≤ i ≤ b : ((Ai ⊨ φ2) ∨ (Ai ⊨ φ1)) ∨ ((Ai ⊭ φ2) ∨ (Ai ⊭ φ1)))
 
 // U_array [FORMULA_COUNT][MAX_SEG][z=5]
 
