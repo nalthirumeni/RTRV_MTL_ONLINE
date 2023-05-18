@@ -11,7 +11,7 @@ The current implementation in C is run on PC, for embedded system's the code wil
 
 Also specific to the target device the size of 'int' may vary (Example:Atmega 328 - int is 2 byte and in SAM3X8E boards and other 32 bit devices typically int or unsiged int takes 32 bits).
 
-Fixed size integer arrays, are chosen as the data structure, since the fixed size array can access any bit of information faster than an linked list, also we do not add any new element in front of the array, so no need for the array to shift its content.
+
 
 P Thirumeni
 203085002 - IITDH
