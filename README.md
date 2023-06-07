@@ -5,7 +5,7 @@ Functions for Online monitoring of RTRV_MTL
 The monitoring software tool is a Time triggered, Unobtrusive system, which monitors an unaugmented code (of the system under monitor).
 The monitor consumes atomic propositions for every time trigger received and maintains a minimum memory overhead to store only few bits/bytes (in arrays) of information for continuty in processing.
 
-Metric Temporal Logic can be used to draft specifications.
+'ABSOLUTE TIME LIMITS'*  based Metric Temporal Logic can be used to draft specifications.
 
 The current implementation in C is run on PC, for embedded system's the code will be revamped to optimise the memory use by bit manupulation to update assertions, thus each byte can store upto 8 bit of information, currently for each AP, one 'unsiged int' is used in the array.
 
@@ -19,3 +19,6 @@ P Thirumeni
 
 
 +++++++++++++++++++++++++++++++++++++++
+
+* - Time reference from start of the mission (t0),also the evaluation is not recurring, this is in contrast to the classical MTL time reference of 'from now'.  For recurring continuous evalaution either multiple formula with continuing/different time window or use of the MTL_RAW operator functions. 
+
